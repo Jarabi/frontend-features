@@ -2,6 +2,35 @@
 
 Building production-grade frontend features requires attention to performance, accessibility, error resilience, and a smooth user experience. Below is a structured roadmap that walks you through each feature, explaining the core concepts, step‑by‑step implementation strategies, and the production‑grade considerations you must master.
 
+## Table of Content
+
+* [1. Infinite Scrolling](#1-infinite-scrolling)
+    + [Core Concepts](#core-concepts)
+        - [Implementation Steps](#implementation-steps)
+        - [Production‑Grade Considerations](#production-grade-considerations)
+* [2. Debounced Search](#2-debounced-search)
+    + [Core Concepts](#core-concepts-1)
+        - [Implementation Steps](#implementation-steps-1)
+        - [Production‑Grade Considerations](#production-grade-considerations-1)
+* [3. Loading Skeletons](#3-loading-skeletons)
+    + [Core Concepts](#core-concepts-2)
+        - [Implementation Steps](#implementation-steps-2)
+        - [Production‑Grade Considerations](#production-grade-considerations-2)
+* [4. Toast Notifications](#4-toast-notifications)
+    + [Core Concepts](#core-concepts-3)
+        - [Implementation Steps](#implementation-steps-3)
+        - [Production‑Grade Considerations](#production-grade-considerations-3)
+* [5. Modal Dialogs](#5-modal-dialogs)
+    + [Core Concepts](#core-concepts-4)
+        - [Implementation Steps](#implementation-steps-4)
+        - [Production‑Grade Considerations](#production-grade-considerations-4)
+* [6. Drag and Drop](#6-drag-and-drop)
+    + [Core Concepts](#core-concepts-5)
+        - [Implementation Steps](#implementation-steps-5)
+        - [Production‑Grade Considerations](#production-grade-considerations-5)
+- [General Production‑Grade Principles for All Features](#general-production-grade-principles-for-all-features)
+- [Learning Path Suggestion](#learning-path-suggestion)
+
 ## 1. Infinite Scrolling
 
 ### Core Concepts
@@ -39,8 +68,6 @@ Building production-grade frontend features requires attention to performance, a
     - Network flakiness – implement retry logic with exponential backoff.
 - **Performance**: Use `IntersectionObserver` instead of scroll listeners for better efficiency – it’s natively async and doesn’t block the main thread.
 
----
-
 ## 2. Debounced Search
 
 ### Core Concepts
@@ -77,8 +104,6 @@ Building production-grade frontend features requires attention to performance, a
 - **Optimistic UI**: Show stale results while loading? Usually clear or keep previous results – decide based on use case.
 - **Highlighting**: Use a safe method (e.g., `dangerouslySetInnerHTML` in React with sanitization, or use `innerHTML` after escaping the text).
 
----
-
 ## 3. Loading Skeletons
 
 ### Core Concepts
@@ -110,8 +135,6 @@ Building production-grade frontend features requires attention to performance, a
 - **Accessibility**: Indicate that content is loading with `aria-busy="true"` and `aria-label="Loading content"`.
 - **State handling**: When data loads partially (e.g., list with multiple pages), only show skeletons for new items, not the entire list.
 - **Tools**: Libraries like `react-loading-skeleton` can simplify creation, but understanding the underlying CSS is valuable.
-
----
 
 ## 4. Toast Notifications
 
@@ -159,8 +182,6 @@ Building production-grade frontend features requires attention to performance, a
 - **Edge cases**:
     - Many toasts at once – cap maximum visible toasts (e.g., 5).
     - Server‑side rendering (SSR): only render container after mount to avoid hydration mismatch.
-
----
 
 ## 5. Modal Dialogs
 
@@ -212,8 +233,6 @@ Building production-grade frontend features requires attention to performance, a
     - Modal content that is taller than the viewport – ensure scrolling inside modal works without affecting background.
 
 - **Cross‑browser**: Scroll lock may have subtle differences – test on all major browsers.
-
----
 
 ## 6. Drag and Drop
 
@@ -267,8 +286,6 @@ Building production-grade frontend features requires attention to performance, a
 
 - **Libraries**: For complex UIs, consider production‑ready libraries like `react-beautiful-dnd` (now `@hello-pangea/dnd`), `dnd-kit`, or `SortableJS`. Understanding the underlying principles is still crucial.
 
----
-
 #### General Production‑Grade Principles for All Features
 
 - **Error Handling**: Always display user‑friendly errors, log details to an error tracking service (Sentry, etc.), and provide retry mechanisms where appropriate.
@@ -283,8 +300,6 @@ Building production-grade frontend features requires attention to performance, a
     - End‑to‑end tests for critical paths.
 - **Responsive Design**: Ensure all features work on mobile, tablet, and desktop, with touch and mouse inputs.
 - **Documentation**: Write clear comments and maintain a style guide for your components so they remain reusable and maintainable.
-
----
 
 #### Learning Path Suggestion
 
