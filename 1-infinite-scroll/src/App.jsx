@@ -12,48 +12,53 @@ function App() {
   const [hasMore, setHasMore] = useState(true);
 
   const abortControllerRef = useRef(null);
+  const isFetchingRef = useRef(false);
   const observerRef = useRef(null);
   const lastItemRef = useRef(null);
 
   // Fetch function with cancellation
   const fetchItems = useCallback(async (pageToFetch) => {
-    if (loading) return;
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
 
-    setLoading(true);
-    setError(null);
+      setLoading(true);
+      setError(null);
 
-    // Cancel previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    try {
-      const response = await fetch(
-        `${API_BASE}?_page=${pageToFetch}&_limit=${PAGE_SIZE}`,
-        { signal: controller.signal }
-      );
-
-      if (!response.ok) throw new Error('Failed to fetch posts');
-
-      const data = await response.json();
-
-      if (data.length < PAGE_SIZE) {
-        setHasMore(false);
+      // Cancel previous request
+      if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
       }
 
-      setItems(prev => [...prev, ...data]);
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        setError(err.message);
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      try {
+          const response = await fetch(
+              `${API_BASE}?_page=${pageToFetch}&_limit=${PAGE_SIZE}`,
+              { signal: controller.signal },
+          );
+
+          if (!response.ok) throw new Error('Failed to fetch posts');
+
+          const data = await response.json();
+
+          if (data.length < PAGE_SIZE) {
+              setHasMore(false);
+          }
+
+          setItems((prev) => [...prev, ...data]);
+      } catch (err) {
+          if (err.name !== 'AbortError') {
+              setError(err.message);
+          }
+      } finally {
+          isFetchingRef.current = false;
+          setLoading(false);
+          if (abortControllerRef.current === controller) {
+              abortControllerRef.current = null;
+          }
       }
-    } finally {
-      setLoading(false);
-      abortControllerRef.current = null;
-    }
-  }, [loading]);
+  }, []);
 
   // Load first page on mount
   useEffect(() => {
