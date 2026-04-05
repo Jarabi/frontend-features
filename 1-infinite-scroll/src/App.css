@@ -103,3 +103,8 @@ h1 {
   cursor: pointer;
   font-weight: bold;
 }
+
+.error-message button:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}

@@ -57,9 +57,8 @@ function App() {
 
   // Load first page on mount
   useEffect(() => {
-    fetchItems(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      fetchItems(1);
+  }, [fetchItems]);
 
   // Load more when page changes
   useEffect(() => {
@@ -109,49 +108,49 @@ function App() {
   const retry = () => fetchItems(page);
 
   return (
-    <div className="app">
-      <h1>Infinite Scroll Demo</h1>
+      <div className='app'>
+          <h1>Infinite Scroll Demo</h1>
 
-      <div className="items-list">
-        {items.map((item, idx) => (
-          <div key={item.id} className="item-card">
-            <h3>{item.title}</h3>
-            <p>{item.body}</p>
+          <div className='items-list'>
+              {items.map((item) => (
+                  <div key={item.id} className='item-card'>
+                      <h3>{item.title}</h3>
+                      <p>{item.body}</p>
+                  </div>
+              ))}
+
+              {/* Sentinel that triggers loading */}
+              {!loading && hasMore && items.length > 0 && (
+                  <div ref={lastItemRef} className='sentinel' />
+              )}
+
+              {/* Loading spinner */}
+              {loading && (
+                  <div className='loading-spinner'>
+                      <div className='spinner'></div>
+                      <p>Loading more posts...</p>
+                  </div>
+              )}
+
+              {/* End of data */}
+              {!hasMore && items.length > 0 && (
+                  <div className='end-message'>🎉 You've reached the end!</div>
+              )}
+
+              {/* Error UI */}
+              {error && (
+                  <div className='error-message'>
+                      <p>⚠️ {error}</p>
+                      <button onClick={retry}>Retry</button>
+                  </div>
+              )}
+
+              {/* Empty state */}
+              {!loading && items.length === 0 && !error && (
+                  <div className='empty-state'>No posts found.</div>
+              )}
           </div>
-        ))}
-
-        {/* Sentinel that triggers loading */}
-        {!loading && hasMore && items.length > 0 && (
-          <div ref={lastItemRef} className="sentinel" />
-        )}
-
-        {/* Loading spinner */}
-        {loading && (
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Loading more posts...</p>
-          </div>
-        )}
-
-        {/* End of data */}
-        {!hasMore && items.length > 0 && (
-          <div className="end-message">🎉 You've reached the end!</div>
-        )}
-
-        {/* Error UI */}
-        {error && (
-          <div className="error-message">
-            <p>⚠️ {error}</p>
-            <button onClick={retry}>Retry</button>
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && items.length === 0 && !error && (
-          <div className="empty-state">No posts found.</div>
-        )}
       </div>
-    </div>
   );
 }
 
