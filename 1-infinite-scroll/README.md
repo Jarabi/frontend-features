@@ -70,7 +70,7 @@ npm run preview
 
 ### Sample Request
 
-```
+```http
 GET https://jsonplaceholder.typicode.com/posts?_page=1&_limit=10
 ```
 
@@ -136,7 +136,7 @@ This project uses [JSONPlaceholder](https://jsonplaceholder.typicode.com/), a fr
 
 1. **Open DevTools → Network tab**
 2. **Scroll rapidly** to trigger multiple requests
-3. **Observe**: Earlier requests are cancelled (Status: 304 or custom abort)
+3. **Observe**: Earlier requests are cancelled (shown as "canceled" in Network tab)
 4. **Only the latest request** completes and loads data
 
 ---
