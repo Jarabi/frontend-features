@@ -20,8 +20,6 @@ function App() {
     
     const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     const parts = text.split(regex);
-    console.log('REGEX:', regex);
-    console.log('PARTS:', parts);
     
     return parts.map((part, i) => 
       regex.test(part) ? 
@@ -68,12 +66,12 @@ function App() {
         setNoResults(false);
         setResults(data);
       }
+      setLoading(false);
     } catch (err) {
-      if (err.name !== 'AbortError') {
-        setError(err.message);
-        setResults([]);
-      }
-    } finally {
+      if (err.name === 'AbortError') return;
+
+      setError(err.message);
+      setResults([]);
       setLoading(false);
     }
   };

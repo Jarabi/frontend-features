@@ -1,16 +1,46 @@
-# React + Vite
+# Debounced Search Feature
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+A React component that implements **debounced search** with automatic request cancellation and result highlighting. The search delays API calls by 300ms after the user stops typing to reduce unnecessary requests.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Debounce Implementation
 
-## React Compiler
+**Method**: Custom debounce using `setTimeout` and `clearTimeout` with React refs.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**How it works**:
+- User input triggers `handleSearchChange`
+- Previous timer is cleared, new 300ms timer starts
+- Search executes only after user stops typing for 300ms
+- Prevents excessive API calls during rapid typing
 
-## Expanding the ESLint configuration
+## API Configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Endpoint**: `https://jsonplaceholder.typicode.com/posts?q={searchTerm}`
+
+**Example Request**:
+```bash
+GET https://jsonplaceholder.typicode.com/posts?q=quis
+```
+
+**Response**: Array of post objects matching the search term in title or body.
+
+## Customization
+
+### Changing Debounce Delay
+
+**Location**: `src/App.jsx`, line ~75 in `handleSearchChange` function
+
+**Current**: `300` milliseconds
+
+**To modify**:
+```jsx
+debounceTimerRef.current = setTimeout(() => {
+  performSearch(value);
+}, 500); // Change 300 to desired delay in ms
+```
+
+**Recommended values**:
+- Fast (150-200ms): For instant-feeling interfaces
+- Standard (300ms): Good balance of responsiveness vs. API load
+- Slow (500-1000ms): For expensive APIs or slower networks
