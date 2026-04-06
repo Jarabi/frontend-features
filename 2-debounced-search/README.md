@@ -29,7 +29,7 @@ GET https://jsonplaceholder.typicode.com/posts?q=quis
 
 ### Changing Debounce Delay
 
-**Location**: `src/App.jsx`, line ~75 in `handleSearchChange` function
+**Location**: `src/App.jsx`, in the `handleSearchChange` function
 
 **Current**: `300` milliseconds
 
