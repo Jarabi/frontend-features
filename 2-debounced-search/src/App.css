@@ -240,13 +240,18 @@ header p {
 }
 
 .history {
-  font-size: 0.9rem;
-  margin-top: 16px;
-  color: #718096;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: #f7fafc;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  color: #4a5568;
+  overflow-wrap: break-word;
 }
 
 .hist-bold {
   font-weight: bold;
+  color: #2d3748;
 }
 
 /* Add to existing CSS */
@@ -272,21 +277,6 @@ header p {
   border-radius: 0.75rem;
   color: #4a5568;
   margin-top: 1rem;
-}
-
-.history {
-  margin-top: 0.75rem;
-  padding: 0.5rem;
-  background: #f7fafc;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  color: #4a5568;
-  word-break: break-word;
-}
-
-.hist-bold {
-  font-weight: bold;
-  color: #2d3748;
 }
 
 /* Make search container sticky for better UX */

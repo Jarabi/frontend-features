@@ -57,23 +57,28 @@ function App() {
         return query ? `${query}:${pageNum}` : `initial:${pageNum}`;
     };
 
+    // Keep a ref in sync with cache state for reads without dependency
+    const cacheRef = useRef(cache);
+    useEffect(() => {
+        cacheRef.current = cache;
+    }, [cache]);
+
     // Search/Pagination function
     const fetchContent = useCallback(
         async (query, pageNum, isNewSearch = false) => {
             const cacheKey = getCacheKey(query, pageNum);
 
             // Check cache first
-            if (cache[cacheKey]) {
+            const cachedData = cacheRef.current[cacheKey];
+            if (cachedData) {
                 if (isNewSearch) {
-                    setResults(cache[cacheKey]);
-                    setTotalLoaded(cache[cacheKey].length);
+                    setResults(cachedData);
+                    setTotalLoaded(cachedData.length);
                 } else {
-                    setResults((prev) => [...prev, ...cache[cacheKey]]);
-                    setTotalLoaded((prev) => prev + cache[cacheKey].length);
+                    setResults((prev) => [...prev, ...cachedData]);
+                    setTotalLoaded((prev) => prev + cachedData.length);
                 }
-
-                // Check if we have more data
-                if (cache[cacheKey].length < PAGE_SIZE) {
+                if (cachedData.length < PAGE_SIZE) {
                     setHasMore(false);
                 }
                 return;
@@ -142,7 +147,7 @@ function App() {
                 setLoading(false);
             }
         },
-        [cache],
+        [],
     );
 
     // Reset everything for new search
@@ -233,10 +238,19 @@ function App() {
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if ((event.ctrlKey && event.key === 'k') || event.key === '/') {
+            // Only trigger "/" shortcut when not in an input/textarea
+            const isInputFocused = ['INPUT', 'TEXTAREA'].includes(
+                document.activeElement?.tagName,
+            );
+
+            if (event.ctrlKey && event.key === 'k') {
+                event.preventDefault();
+                inputRef.current?.focus();
+            } else if (event.key === '/' && !isInputFocused) {
                 event.preventDefault();
                 inputRef.current?.focus();
             }
+
             // Optional: Add ESC to clear search
             if (event.key === 'Escape') {
                 setSearchTerm('');
@@ -316,7 +330,7 @@ function App() {
                                 ),
                             ),
                         )
-                            .filter((q) => q)
+                            .filter((q) => q && q !== 'initial')
                             .join(', ')}
                     </div>
                 )}
@@ -336,8 +350,8 @@ function App() {
                     </div>
                 )}
 
-                {/* Results with highlighting */}
-                {!loading && !error && results.length > 0 && (
+                {/* Results with highlighting - keep visible during load-more */}
+                {!error && results.length > 0 && (
                     <div className='results-list'>
                         {results.map((result, index) => (
                             <article
