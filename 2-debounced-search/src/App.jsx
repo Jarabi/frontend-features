@@ -73,9 +73,16 @@ function App() {
             if (isFetchingRef.current && !isNewSearch) return;
             isFetchingRef.current = true;
 
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+                abortControllerRef.current = null;
+                setNoResults(Boolean(query.trim()) && cachedData.length === 0);
+            }
+
             // Check cache first
             const cachedData = cacheRef.current[cacheKey];
             if (cachedData) {
+                setLoading(false);
                 if (isNewSearch) {
                     setResults(cachedData);
                     setTotalLoaded(cachedData.length);
@@ -88,11 +95,6 @@ function App() {
                 }
                 isFetchingRef.current = false;
                 return;
-            }
-
-            // Cancel previous request
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
             }
 
             setLoading(true);
@@ -117,6 +119,7 @@ function App() {
                 if (!response.ok) throw new Error('Failed to fetch');
 
                 const data = await response.json();
+                if (controller.signal.aborted) return;
 
                 // Update cache
                 setCache((prev) => ({ ...prev, [cacheKey]: data }));
@@ -150,8 +153,11 @@ function App() {
                     setResults([]);
                 }
             } finally {
-                setLoading(false);
-                isFetchingRef.current = false;
+                if (!controller.signal.aborted) {
+                    abortControllerRef.current = null;
+                    setLoading(false);
+                    isFetchingRef.current = false;
+                }
             }
             // eslint-disable-next-line
         },
@@ -216,7 +222,7 @@ function App() {
 
     // Setup Intersection Observer
     useEffect(() => {
-        if (loading || !hasMore) return;
+        if (loading || !hasMore || error) return;
 
         if (observerRef.current) {
             observerRef.current.disconnect();
@@ -224,7 +230,12 @@ function App() {
 
         observerRef.current = new IntersectionObserver(
             (entries) => {
-                if (entries[0].isIntersecting && !loading && hasMore) {
+                if (
+                    entries[0].isIntersecting &&
+                    !loading &&
+                    hasMore &&
+                    !error
+                ) {
                     loadMore();
                 }
             },
@@ -241,7 +252,7 @@ function App() {
                 observerRef.current.disconnect();
             }
         };
-    }, [loading, hasMore, loadMore]);
+    }, [loading, hasMore, error, loadMore]);
 
     // Keyboard shortcuts
     useEffect(() => {
@@ -262,6 +273,10 @@ function App() {
 
             // Optional: Add ESC to clear search
             if (event.key === 'Escape') {
+                if (debounceTimerRef.current) {
+                    clearTimeout(debounceTimerRef.current);
+                    debounceTimerRef.current = null;
+                }
                 setSearchTerm('');
                 resetAndSearch('');
                 inputRef.current?.blur();
@@ -321,11 +336,11 @@ function App() {
                 </div>
 
                 <div className='search-stats'>
-                    {searchTerm && !loading && !error && (
+                    {currentQuery && !loading && !error && (
                         <span className='result-count'>
                             Found {totalLoaded}{' '}
                             {totalLoaded === 1 ? 'result' : 'results'} for "
-                            {searchTerm}"{hasMore && ' (scroll for more)'}
+                            {currentQuery}"{hasMore && ' (scroll for more)'}
                         </span>
                     )}
                     {!searchTerm && !loading && totalLoaded > 0 && (
@@ -360,7 +375,7 @@ function App() {
                 )}
 
                 {/* Results with highlighting - keep visible during load-more */}
-                {!error && results.length > 0 && (
+                {results.length > 0 && (
                     <div className='results-list'>
                         {results.map((result, index) => (
                             <article
@@ -373,9 +388,11 @@ function App() {
                                 }
                             >
                                 <h3>
-                                    {highlightMatch(result.title, searchTerm)}
+                                    {highlightMatch(result.title, currentQuery)}
                                 </h3>
-                                <p>{highlightMatch(result.body, searchTerm)}</p>
+                                <p>
+                                    {highlightMatch(result.body, currentQuery)}
+                                </p>
                                 <small>Post #{result.id}</small>
                             </article>
                         ))}
@@ -391,7 +408,7 @@ function App() {
                 )}
 
                 {/* Error state */}
-                {error && (
+                {error && results.length === 0 && (
                     <div className='error-state'>
                         <p>⚠️ {error}</p>
                         <button
@@ -403,10 +420,25 @@ function App() {
                     </div>
                 )}
 
+                {error && results.length > 0 && (
+                    <div className='loading-more'>
+                        <p>⚠️ Couldn't load more results.</p>
+                        <button
+                            onClick={() => {
+                                setError(null);
+                                fetchContent(currentQuery, page, false);
+                            }}
+                            className='retry-btn'
+                        >
+                            Retry
+                        </button>
+                    </div>
+                )}
+
                 {/* No results */}
-                {noResults && !loading && searchTerm && (
+                {noResults && !loading && currentQuery && (
                     <div className='no-results'>
-                        <p>😕 No results found for "{searchTerm}"</p>
+                        <p>😕 No results found for "{currentQuery}"</p>
                         <p className='suggestion'>
                             Try different keywords like "quis", "vero", or
                             "magni"
