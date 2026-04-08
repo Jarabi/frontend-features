@@ -243,7 +243,8 @@ function App() {
                 document.activeElement?.tagName,
             );
 
-            if (event.ctrlKey && event.key === 'k') {
+            // Support both Ctrl+K (Windows/Linux) and Cmd+K (macOS)
+            if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
                 event.preventDefault();
                 inputRef.current?.focus();
             } else if (event.key === '/' && !isInputFocused) {
@@ -275,6 +276,14 @@ function App() {
         };
     }, []);
 
+    // Derive unique cached search terms for display
+    const cachedQueries = Object.keys(cache)
+        .map((key) => key.split(':')[0])
+        .filter(
+            (val, idx, arr) =>
+                val && val !== 'initial' && arr.indexOf(val) === idx,
+        );
+
     return (
         <div className='app'>
             <header>
@@ -292,7 +301,7 @@ function App() {
                         ref={inputRef}
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        placeholder="Press 'CTRL+K' or '/' to search... Press 'ESC' to clear"
+                        placeholder="Press 'CTRL+K' / '⌘K' or '/' to search... Press 'ESC' to clear"
                         className='search-input'
                         autoFocus
                     />
@@ -320,18 +329,10 @@ function App() {
                 </div>
 
                 {/* Cache stats (optional, shows performance benefit) */}
-                {Object.keys(cache).length > 0 && (
+                {cachedQueries.length > 0 && (
                     <div className='history'>
                         <span className='hist-bold'>⚡ Cached queries:</span>{' '}
-                        {Array.from(
-                            new Set(
-                                Object.keys(cache).map(
-                                    (key) => key.split(':')[0],
-                                ),
-                            ),
-                        )
-                            .filter((q) => q && q !== 'initial')
-                            .join(', ')}
+                        {cachedQueries.join(', ')}
                     </div>
                 )}
             </div>

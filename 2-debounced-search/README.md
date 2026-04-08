@@ -1,46 +1,77 @@
-# Debounced Search Feature
+# Search + Infinite Scroll Feature
 
 ## Overview
 
-A React component that implements **debounced search** with automatic request cancellation and result highlighting. The search delays API calls by 300ms after the user stops typing to reduce unnecessary requests.
+This React example combines **debounced search**, **keyboard shortcuts**, **cached results**, **search query history**, and **infinite scroll**. It fetches paginated post data from JSONPlaceholder and only performs network requests after the user pauses typing.
 
-## Debounce Implementation
+Key improvements in this implementation:
+- Debounced input handling with a 300ms delay
+- Request cancellation using `AbortController`
+- Keyboard shortcuts for focusing and clearing the search box
+- Result caching and query history display
+- Infinite scroll for loading additional pages automatically
+- Text highlighting for matched query terms
 
-**Method**: Custom debounce using `setTimeout` and `clearTimeout` with React refs.
+## Keyboard Shortcuts
 
-**How it works**:
-- User input triggers `handleSearchChange`
-- Previous timer is cleared, new 300ms timer starts
-- Search executes only after user stops typing for 300ms
-- Prevents excessive API calls during rapid typing
+The search input supports:
+- `Ctrl+K` / `⌘K`: focus the search field
+- `/` : focus the search field when not typing in another input
+- `Esc`: clear the search term and reset to default post feed
 
-## API Configuration
+These shortcuts are implemented in `src/App.jsx` via a `keydown` window listener.
 
-**Endpoint**: `https://jsonplaceholder.typicode.com/posts?q={searchTerm}`
+## Cached Results & Search History
 
-**Example Request**:
+Search results are cached per query and page using a simple cache object in state. This means repeated queries or paginated pages can reuse previously loaded data without refetching.
+
+The UI also shows a cached query history list, derived from stored cache keys, to surface recent saved searches.
+
+## Search + Infinite Scroll
+
+When the search term is present, the app requests paginated search results from JSONPlaceholder. When the search field is empty, it loads all posts in pages.
+
+Infinite scroll is driven by an `IntersectionObserver` watching the last result item and fetching the next page when it becomes visible.
+
+## API Endpoint
+
+**Base URL**: `https://jsonplaceholder.typicode.com/posts`
+
+**Search request**:
 ```bash
-GET https://jsonplaceholder.typicode.com/posts?q=quis
+GET https://jsonplaceholder.typicode.com/posts?q=quis&_page=1&_limit=10
 ```
 
-**Response**: Array of post objects matching the search term in title or body.
+**Regular feed request**:
+```bash
+GET https://jsonplaceholder.typicode.com/posts?_page=1&_limit=10
+```
+
+The app uses `PAGE_SIZE = 10` and appends results to the list until no more items remain.
 
 ## Customization
 
-### Changing Debounce Delay
+### Debounce Delay
 
-**Location**: `src/App.jsx`, in the `handleSearchChange` function
+**Location**: `src/App.jsx` inside the `handleSearchChange` function.
 
-**Current**: `300` milliseconds
+**Default**: `300` milliseconds
 
-**To modify**:
+**To change**:
 ```jsx
 debounceTimerRef.current = setTimeout(() => {
-  performSearch(value);
-}, 500); // Change 300 to desired delay in ms
+  resetAndSearch(value);
+}, 500); // change 300 to any delay in ms
 ```
 
-**Recommended values**:
-- Fast (150-200ms): For instant-feeling interfaces
-- Standard (300ms): Good balance of responsiveness vs. API load
-- Slow (500-1000ms): For expensive APIs or slower networks
+Recommended values:
+- `150-200ms`: faster response, more requests
+- `300ms`: balanced responsiveness
+- `500-1000ms`: slower requests, better for heavy APIs
+
+### Search Configuration
+
+- Change `API_BASE` in `src/App.jsx` to use a different API
+- Adjust `PAGE_SIZE` in `src/App.jsx` to change page size for infinite scrolling
+- Modify the cache key logic in `getCacheKey` if the API query format changes
+
