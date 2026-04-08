@@ -76,7 +76,6 @@ function App() {
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
                 abortControllerRef.current = null;
-                setNoResults(Boolean(query.trim()) && cachedData.length === 0);
             }
 
             // Check cache first
