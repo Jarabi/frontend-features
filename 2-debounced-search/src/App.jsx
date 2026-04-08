@@ -26,6 +26,7 @@ function App() {
     const abortControllerRef = useRef(null);
     const observerRef = useRef(null);
     const lastItemRef = useRef(null);
+    const isFetchingRef = useRef(false);
 
     // Track if we're in search mode vs initial load
     const [isSearching, setIsSearching] = useState(false);
@@ -68,6 +69,10 @@ function App() {
         async (query, pageNum, isNewSearch = false) => {
             const cacheKey = getCacheKey(query, pageNum);
 
+            // Prevent concurrent fetches for the same logical request
+            if (isFetchingRef.current && !isNewSearch) return;
+            isFetchingRef.current = true;
+
             // Check cache first
             const cachedData = cacheRef.current[cacheKey];
             if (cachedData) {
@@ -81,6 +86,7 @@ function App() {
                 if (cachedData.length < PAGE_SIZE) {
                     setHasMore(false);
                 }
+                isFetchingRef.current = false;
                 return;
             }
 
@@ -145,7 +151,9 @@ function App() {
                 }
             } finally {
                 setLoading(false);
+                isFetchingRef.current = false;
             }
+            // eslint-disable-next-line
         },
         [],
     );
