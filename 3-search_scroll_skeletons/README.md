@@ -29,7 +29,7 @@ The UI also shows a cached query history list, derived from stored cache keys, t
 
 ## Search + Infinite Scroll
 
-When the search term is present, the app requests paginated search results from JSONPlaceholder. When the search field is empty, it loads all posts in pages.
+The app starts with an empty state showing no posts. When a search term is present, it requests paginated search results from JSONPlaceholder. The default paginated feed is only loaded after the user clears the query or presses Escape in the search input (as implemented in `src/App.jsx`'s `handleSearchChange` and keyboard shortcut handlers).
 
 Infinite scroll is driven by an `IntersectionObserver` watching the last result item and fetching the next page when it becomes visible.
 

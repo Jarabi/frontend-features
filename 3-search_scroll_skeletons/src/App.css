@@ -460,6 +460,25 @@ header p {
   border-radius: 12px;
 }
 
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.product-info h1 {
+  font-size: 2rem;
+  color: #2d3748;
+  margin: 0;
+}
+
+.product-info p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .buy-button {
   background: #667eea;
   color: white;
@@ -469,6 +488,20 @@ header p {
   font-size: 1.1rem;
   cursor: pointer;
   margin-top: 1rem;
+  align-self: flex-start;
+  transition: background 0.2s;
+}
+
+.buy-button:hover {
+  background: #5a67d8;
+}
+
+/* Sentinel element for infinite scroll */
+.sentinel {
+  height: 1px;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Social feed styles */
@@ -544,5 +577,21 @@ header p {
   
   .product-gallery .main-image {
     height: 250px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner-small,
+  .skeleton-title,
+  .skeleton-text,
+  .loading-more-skeletons {
+    animation: none;
+  }
+
+  .result-card,
+  .view-toggle button,
+  .layout-selector button,
+  .post-actions button {
+    transition: none;
   }
 }

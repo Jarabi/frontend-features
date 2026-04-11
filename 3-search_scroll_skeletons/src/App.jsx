@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
-import {
-    SkeletonGrid,
-    SkeletonListItem,
-    SkeletonProfile,
-} from './components/Skeletons';
+import { SkeletonGrid, SkeletonListItem } from './components/Skeletons';
 import {
     SkeletonDashboard,
     SkeletonFeed,
@@ -13,6 +9,7 @@ import {
 
 const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
 const PAGE_SIZE = 10;
+const MAX_CACHE_ENTRIES = 20;
 
 function App() {
     // Search state
@@ -23,7 +20,7 @@ function App() {
     const [noResults, setNoResults] = useState(false);
 
     // State to demonstrate different skeleton types
-    const [viewMode, setViewMode] = useState('grid'); // 'grid', 'list', 'profile'
+    // const [viewMode, setViewMode] = useState('grid'); // 'grid', 'list'
 
     // Add layout type to demonstrate different skeletons
     const [layoutType, setLayoutType] = useState('blog'); // 'blog', 'dashboard', 'product', 'social'
@@ -35,6 +32,45 @@ function App() {
 
     // Cache structure: { "query:page": data[] }
     const [cache, setCache] = useState({});
+    const cacheOrderRef = useRef([]);
+
+    const touchCacheKey = useCallback((key) => {
+        cacheOrderRef.current = [
+            key,
+            ...cacheOrderRef.current.filter((existing) => existing !== key),
+        ];
+    }, []);
+
+    const addCacheEntry = useCallback(
+        (key, data) => {
+            setCache((prev) => {
+                const next = {
+                    ...prev,
+                    [key]: data,
+                };
+                touchCacheKey(key);
+                if (Object.keys(next).length > MAX_CACHE_ENTRIES) {
+                    const evictKey = cacheOrderRef.current.pop();
+                    if (evictKey) {
+                        delete next[evictKey];
+                    }
+                }
+                return next;
+            });
+        },
+        [touchCacheKey],
+    );
+
+    const getCachedData = useCallback(
+        (key) => {
+            const entry = cacheRef.current[key];
+            if (entry) {
+                touchCacheKey(key);
+            }
+            return entry;
+        },
+        [touchCacheKey],
+    );
 
     // Refs
     const inputRef = useRef(null);
@@ -45,7 +81,6 @@ function App() {
     const isFetchingRef = useRef(false);
 
     // Track if we're in search mode vs initial load
-    const [isSearching, setIsSearching] = useState(false);
     const [currentQuery, setCurrentQuery] = useState('');
 
     // Function to highlight matched text
@@ -95,7 +130,7 @@ function App() {
             }
 
             // Check cache first
-            const cachedData = cacheRef.current[cacheKey];
+            const cachedData = getCachedData(cacheKey);
             if (cachedData) {
                 setLoading(false);
                 if (isNewSearch) {
@@ -136,8 +171,8 @@ function App() {
                 const data = await response.json();
                 if (controller.signal.aborted) return;
 
-                // Update cache
-                setCache((prev) => ({ ...prev, [cacheKey]: data }));
+                // Update cache with bounded eviction
+                addCacheEntry(cacheKey, data);
 
                 // Update results
                 if (isNewSearch) {
@@ -174,9 +209,8 @@ function App() {
                     isFetchingRef.current = false;
                 }
             }
-            // eslint-disable-next-line
         },
-        [],
+        [addCacheEntry, getCachedData],
     );
 
     // Reset everything for new search
@@ -188,7 +222,6 @@ function App() {
             setResults([]);
             setNoResults(false);
             setError(null);
-            setIsSearching(!!query.trim());
             setCurrentQuery(query);
 
             // Clear observer to prevent auto-loading during reset
@@ -214,8 +247,6 @@ function App() {
 
         // If search is empty, reset to regular posts
         if (!value.trim()) {
-            setIsSearching(false);
-            setCurrentQuery('');
             resetAndSearch('');
             return;
         }
@@ -337,9 +368,6 @@ function App() {
             case 'social':
                 return <SkeletonFeed count={3} />;
 
-            case 'profile':
-                return <SkeletonProfile />;
-
             default:
                 return <SkeletonGrid columns={2} count={6} />;
         }
@@ -361,69 +389,95 @@ function App() {
                                         : null
                                 }
                             >
-                                <div className="card-image-placeholder">
-                                    <div className="placeholder-icon">📝</div>
+                                <div className='card-image-placeholder'>
+                                    <div className='placeholder-icon'>📝</div>
                                 </div>
-                                <div className="card-content">
-                                    <h3>{highlightMatch(result.title, searchTerm)}</h3>
-                                    <p>{highlightMatch(result.body, searchTerm)}</p>
+                                <div className='card-content'>
+                                    <h3>
+                                        {highlightMatch(
+                                            result.title,
+                                            searchTerm,
+                                        )}
+                                    </h3>
+                                    <p>
+                                        {highlightMatch(
+                                            result.body,
+                                            searchTerm,
+                                        )}
+                                    </p>
                                     <small>Post #{result.id}</small>
                                 </div>
                             </article>
                         ))}
                     </div>
                 );
-            
+
             case 'dashboard':
                 return (
-                    <div className="dashboard-content">
-                        <div className="stats-grid">
-                            {results.slice(0, 3).map(result => (
-                                <div key={result.id} className="stat-card">
+                    <div className='dashboard-content'>
+                        <div className='stats-grid'>
+                            {results.slice(0, 3).map((result) => (
+                                <div key={result.id} className='stat-card'>
                                     <h4>{result.title}</h4>
                                     <p>{result.body.substring(0, 50)}</p>
                                 </div>
                             ))}
                         </div>
-                        <div className="recent-items">
+                        <div className='recent-items'>
                             <h3>Recent Posts</h3>
-                            {results.slice(0, 5).map(result => (
-                                <div key={result.id} className="recent-item">
+                            {results.slice(0, 5).map((result, index) => (
+                                <div
+                                    key={result.id}
+                                    className='recent-item'
+                                    ref={index === 4 ? lastItemRef : null}
+                                >
                                     <span>{result.title}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 );
-            
+
             case 'product':
                 return (
-                    <div className="product-page">
-                        <div className="product-gallery">
-                            <div className="main-image">📦 Product Image</div>
+                    <div className='product-page'>
+                        <div className='product-gallery'>
+                            <div className='main-image'>📦 Product Image</div>
                         </div>
-                        <div className="product-info">
+                        <div className='product-info'>
                             <h1>{results[0]?.title}</h1>
                             <p>{results[0]?.body}</p>
-                            <button className="buy-button">Add to Cart</button>
+                            <button className='buy-button'>Add to Cart</button>
                         </div>
+                        {/* Sentinel for infinite scroll when more results available */}
+                        {hasMore && results.length > 0 && (
+                            <div ref={lastItemRef} className='sentinel' />
+                        )}
                     </div>
                 );
-            
+
             case 'social':
                 return (
-                    <div className="social-feed">
-                        {results.map(result => (
-                            <div key={result.id} className="feed-post">
-                                <div className="postheader">
-                                    <div className="avatar-placeholder">👤</div>
-                                    <div className="post-meta">
+                    <div className='social-feed'>
+                        {results.map((result, index) => (
+                            <div
+                                key={result.id}
+                                className='feed-post'
+                                ref={
+                                    index === results.length - 1
+                                        ? lastItemRef
+                                        : null
+                                }
+                            >
+                                <div className='postheader'>
+                                    <div className='avatar-placeholder'>👤</div>
+                                    <div className='post-meta'>
                                         <strong>User {result.userId}</strong>
                                         <span>{result.title}</span>
                                     </div>
                                 </div>
                                 <p>{result.body}</p>
-                                <div className="post-actions">
+                                <div className='post-actions'>
                                     <button>❤️ Like</button>
                                     <button>💬 Comment</button>
                                     <button>🔄 Share</button>
@@ -432,17 +486,23 @@ function App() {
                         ))}
                     </div>
                 );
-            
+
             default:
                 return (
-                    <div className="results-list">
+                    <div className='results-list'>
                         {results.map((result, index) => (
                             <article
                                 key={result.id}
-                                className="result-card"
-                                ref={index === results.length - 1 ? lastItemRef : null}
+                                className='result-card'
+                                ref={
+                                    index === results.length - 1
+                                        ? lastItemRef
+                                        : null
+                                }
                             >
-                                <h3>{highlightMatch(result.title, searchTerm)}</h3>
+                                <h3>
+                                    {highlightMatch(result.title, searchTerm)}
+                                </h3>
                                 <p>{highlightMatch(result.body, searchTerm)}</p>
                                 <small>Post #{result.id}</small>
                             </article>
@@ -484,12 +544,6 @@ function App() {
                     onClick={() => setLayoutType('social')}
                 >
                     📱 Social Feed
-                </button>
-                <button
-                    className={layoutType === 'profile' ? 'active' : ''}
-                    onClick={() => setLayoutType('profile')}
-                >
-                    👤 Profile
                 </button>
             </div>
 
@@ -541,15 +595,28 @@ function App() {
                 {loading && results.length === 0 && renderSkeletons()}
 
                 {/* Loaded content - based on layout type */}
-                {!loading && !error && results.length > 0 && renderContent(results)}
+                {!loading &&
+                    !error &&
+                    results.length > 0 &&
+                    renderContent(results)}
 
                 {/* Loading more indicator */}
                 {loading && results.length > 0 && (
                     <div className='loading-more-skeletons'>
-                        {layoutType === 'blog' && <SkeletonGrid columns={2} count={2} hasImage={true} />}
+                        {layoutType === 'blog' && (
+                            <SkeletonGrid
+                                columns={2}
+                                count={2}
+                                hasImage={true}
+                            />
+                        )}
                         {layoutType === 'social' && <SkeletonFeed count={2} />}
-                        {layoutType === 'dashboard' && <div className="loading-more">Loading more...</div> }
-                        {layoutType === 'product' && <div className="loading-more">Loading more...</div> }
+                        {layoutType === 'dashboard' && (
+                            <div className='loading-more'>Loading more...</div>
+                        )}
+                        {layoutType === 'product' && (
+                            <div className='loading-more'>Loading more...</div>
+                        )}
                     </div>
                 )}
 

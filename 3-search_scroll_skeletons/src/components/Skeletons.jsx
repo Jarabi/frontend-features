@@ -1,13 +1,14 @@
 import './Skeletons.css';
 
+const toSafeCount = (value, fallBack = 0) => {
+    const n = Number(value);
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallBack;
+};
+
 // Base skeleton with shimmer animation
-export const Skeleton = ({
-    width,
-    height,
-    borderRadius = '8px',
-    className = '',
-}) => (
+export const Skeleton = ({ width, height, borderRadius = '8px', className = '' }) => (
     <div
+        aria-hidden='true'
         className={`skeleton ${className}`}
         style={{
             width: width || '100%',
@@ -24,7 +25,7 @@ export const SkeletonText = ({
     lastLineWidth = '60%',
 }) => (
     <div className='skeleton-text'>
-        {[...Array(lines)].map((_, i) => (
+        {[...Array(toSafeCount(lines))].map((_, i) => (
             <Skeleton
                 key={i}
                 height={lineHeight}
@@ -100,8 +101,8 @@ export const SkeletonProfile = () => (
 
 // Grid of cards (for product listings, galleries)
 export const SkeletonGrid = ({ columns = 3, count = 6, hasImage = true }) => (
-    <div className="skeleton-grid" style={{ '--grid-columns': columns }}>
-        {[...Array(count)].map((_, i) => (
+    <div className='skeleton-grid' style={{ '--grid-columns': columns }}>
+        {[...Array(toSafeCount(count))].map((_, i) => (
             <SkeletonCard key={i} hasImage={hasImage} />
         ))}
     </div>
@@ -109,9 +110,9 @@ export const SkeletonGrid = ({ columns = 3, count = 6, hasImage = true }) => (
 
 // Comments section skeleton
 export const SkeletonComments = ({ count = 3 }) => (
-    <div className="skeleton-comments">
+    <div className='skeleton-comments'>
         <Skeleton width='150px' height='24px' borderRadius='4px' />
-        {[...Array(count)].map((_, i) => (
+        {[...Array(toSafeCount(count))].map((_, i) => (
             <SkeletonListItem key={i} />
         ))}
     </div>
