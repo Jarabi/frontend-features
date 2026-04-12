@@ -1,37 +1,66 @@
-# Search + Infinite Scroll Feature
+# Search + Infinite Scroll with Loading Skeletons
 
 ## Overview
 
-This React example combines **debounced search**, **keyboard shortcuts**, **cached results**, **search query history**, and **infinite scroll**. It fetches paginated post data from JSONPlaceholder and only performs network requests after the user pauses typing.
+A production-grade React component demonstrating **loading skeleton animations** across multiple layout types (Blog, Dashboard, Product Page, Social Feed). The app combines skeleton loaders with debounced search, infinite scroll pagination, request cancellation, and result caching.
 
-Key improvements in this implementation:
-- Debounced input handling with a 300ms delay
-- Request cancellation using `AbortController`
-- Keyboard shortcuts for focusing and clearing the search box
-- Result caching and query history display
-- Infinite scroll for loading additional pages automatically
-- Text highlighting for matched query terms
+While content is loading, contextual skeleton components render shimmer animations that match each layout's visual hierarchy. Once data arrives, the skeletons are replaced with real content seamlessly.
 
-## Keyboard Shortcuts
+## Features
 
-The search input supports:
-- `Ctrl+K` / `⌘K`: focus the search field
-- `/` : focus the search field when not typing in another input
-- `Esc`: clear the search term and reset to default post feed
+- **Multiple Skeleton Layouts**: Specialized skeleton components for blog cards, dashboards, product pages, and social feeds
+- **Shimmer Animation**: CSS-based gradient animation for realistic loading states
+- **Debounced Search**: 300ms delay before API calls to reduce unnecessary requests
+- **Infinite Scroll**: Automatic pagination when scrolling to bottom using Intersection Observer
+- **Request Cancellation**: `AbortController` cancels stale requests when new ones are triggered
+- **LRU Cache**: Bounded cache (max 20 entries) with least-recently-used eviction policy
+- **Layout Switcher**: Toggle between different UI layouts to see appropriate skeleton states
+- **Keyboard Shortcuts**: `Ctrl+K`/`⌘K`, `/`, and `Esc` for quick search interaction
+- **Text Highlighting**: Search terms highlighted in results
+- **Query History**: Recent cached searches displayed in UI
 
-These shortcuts are implemented in `src/App.jsx` via a `keydown` window listener.
+## Layout Types
 
-## Cached Results & Search History
+The app displays four different layout variants, each with a corresponding skeleton loader:
 
-Search results are cached per query and page using a simple cache object in state. This means repeated queries or paginated pages can reuse previously loaded data without refetching.
+| Layout | Skeleton | Real Content |
+|--------|----------|--------------|
+| **Blog** | `SkeletonGrid` | Grid of article cards with title, excerpt |
+| **Dashboard** | `SkeletonDashboard` | Stat cards + recent items list |
+| **Product** | `SkeletonProductPage` | Product gallery + info column with CTA |
+| **Social** | `SkeletonFeed` | Social posts with avatars, content, actions |
 
-The UI also shows a cached query history list, derived from stored cache keys, to surface recent saved searches.
+## Getting Started
 
-## Search + Infinite Scroll
+### Install & Run
 
-The app starts with an empty state showing no posts. When a search term is present, it requests paginated search results from JSONPlaceholder. The default paginated feed is only loaded after the user clears the query or presses Escape in the search input (as implemented in `src/App.jsx`'s `handleSearchChange` and keyboard shortcut handlers).
+```bash
+npm install
+npm run dev
+```
 
-Infinite scroll is driven by an `IntersectionObserver` watching the last result item and fetching the next page when it becomes visible.
+Open `http://localhost:5173` to see the app.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+### Lint Code
+
+```bash
+npm run lint
+```
+
+## How It Works
+
+1. **Initial Load**: App shows empty state (no posts displayed)
+2. **Search or Reset**: Type in search box or press Escape to load posts
+3. **Skeleton Display**: While fetching, layout-specific skeletons render with shimmer
+4. **Content Replace**: Once data arrives, skeletons are replaced with real content
+5. **Infinite Scroll**: Scroll down; Intersection Observer detects sentinel and auto-fetches next page
+6. **Cache Hit**: Returning to previously searched term uses cached results instantly
 
 ## API Endpoint
 
@@ -47,31 +76,70 @@ GET https://jsonplaceholder.typicode.com/posts?q=quis&_page=1&_limit=10
 GET https://jsonplaceholder.typicode.com/posts?_page=1&_limit=10
 ```
 
-The app uses `PAGE_SIZE = 10` and appends results to the list until no more items remain.
+## Skeleton Components
+
+Located in `src/components/Skeletons.jsx` and `src/components/AdvancedSkeletons.jsx`:
+
+- **Basic Skeletons**: `Skeleton`, `SkeletonText`, `SkeletonImage`, `SkeletonAvatar`
+- **Simple Layouts**: `SkeletonGrid`, `SkeletonListItem`, `SkeletonProfile`
+- **Advanced Layouts**: `SkeletonDashboard`, `SkeletonProductPage`, `SkeletonFeed`
+
+Each uses a CSS gradient animation for the shimmer effect defined in `src/components/Skeletons.css`.
 
 ## Customization
 
-### Debounce Delay
+### Change Debounce Delay
 
-**Location**: `src/App.jsx` inside the `handleSearchChange` function.
+**Location**: `src/App.jsx` in `handleSearchChange` function (line ~268)
 
-**Default**: `300` milliseconds
+**Default**: `300` ms
 
-**To change**:
 ```jsx
 debounceTimerRef.current = setTimeout(() => {
   resetAndSearch(value);
-}, 500); // change 300 to any delay in ms
+}, 500); // adjust delay here
 ```
 
-Recommended values:
-- `150-200ms`: faster response, more requests
-- `300ms`: balanced responsiveness
-- `500-1000ms`: slower requests, better for heavy APIs
+### Adjust Cache Size
 
-### Search Configuration
+**Location**: `src/App.jsx` (line ~12)
 
-- Change `API_BASE` in `src/App.jsx` to use a different API
-- Adjust `PAGE_SIZE` in `src/App.jsx` to change page size for infinite scrolling
-- Modify the cache key logic in `getCacheKey` if the API query format changes
+```jsx
+const MAX_CACHE_ENTRIES = 20; // change to desired limit
+```
 
+### Change API Endpoint
+
+**Location**: `src/App.jsx` (line ~10)
+
+```jsx
+const API_BASE = 'https://your-api.com/posts';
+```
+
+### Modify Page Size
+
+**Location**: `src/App.jsx` (line ~11)
+
+```jsx
+const PAGE_SIZE = 10; // change items per request
+```
+
+## File Structure
+
+```
+src/
+  App.jsx               # Main component with search, cache, infinite scroll
+  App.css               # Styles for layouts and skeletons
+  components/
+    Skeletons.jsx       # Basic skeleton building blocks
+    Skeletons.css       # Shimmer animation and skeleton styles
+    AdvancedSkeletons.jsx # Composed skeletons for complex layouts
+```
+
+## Testing the Skeletons
+
+1. Open DevTools → Network tab
+2. Throttle network to "Slow 3G" or "Offline"
+3. Switch layouts using buttons
+4. Watch skeletons animate while loading
+5. Restore connection to see content appear
