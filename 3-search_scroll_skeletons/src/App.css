@@ -34,6 +34,9 @@ header p {
 }
 
 .search-container {
+  position: sticky;
+  top: 1rem;
+  z-index: 10;
   background: white;
   border-radius: 1rem;
   padding: 1.5rem;
@@ -150,6 +153,7 @@ header p {
   border-radius: 0.75rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: 1px solid #e2e8f0;
+  will-change: transform;
 }
 
 .result-card:hover {
@@ -279,18 +283,6 @@ header p {
   margin-top: 1rem;
 }
 
-/* Make search container sticky for better UX */
-.search-container {
-  position: sticky;
-  top: 1rem;
-  z-index: 10;
-}
-
-/* Improve result cards for better scroll performance */
-.result-card {
-  will-change: transform;
-}
-
 /* View toggle buttons */
 .view-toggle {
   display: flex;
@@ -352,10 +344,10 @@ header p {
 .loading-more-skeletons {
   margin-top: 1rem;
   opacity: 0.7;
-  animation: fadeIn 0.3s ease;
+  animation: fade-in 0.3s ease;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(10px);

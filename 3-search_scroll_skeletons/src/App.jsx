@@ -469,7 +469,7 @@ function App() {
                                         : null
                                 }
                             >
-                                <div className='postheader'>
+                                <div className='post-header'>
                                     <div className='avatar-placeholder'>👤</div>
                                     <div className='post-meta'>
                                         <strong>User {result.userId}</strong>
