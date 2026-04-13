@@ -1,0 +1,249 @@
+/* Toast Container */
+.toast-container {
+    position: fixed;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 380px;
+    min-width: 280px;
+    pointer-events: none;
+}
+
+/* Position variants */
+.toast-container-top-right {
+    top: 1.25rem;
+    right: 1.25rem;
+}
+
+.toast-container-top-left {
+    top: 1.25rem;
+    left: 1.25rem;
+}
+
+.toast-container-top-center {
+    top: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.toast-container-bottom-right {
+    bottom: 1.25rem;
+    right: 1.25rem;
+}
+
+.toast-container-bottom-left {
+    bottom: 1.25rem;
+    left: 1.25rem;
+}
+
+.toast-container-bottom-center {
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Toast Base Styles */
+.toast {
+    pointer-events: auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow:
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Toast animations */
+.toast-enter {
+    animation: slideIn 0.3s ease forwards;
+}
+
+.toast-exit {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Different animations for different positions */
+.toast-container-top-left .toast-enter {
+    animation: slideInLeft 0.3s ease forwards;
+}
+
+.toast-container-bottom-right .toast-enter {
+    animation: slideInRight 0.3s ease forwards;
+}
+
+.toast-container-bottom-left .toast-enter {
+    animation: slideInLeft 0.3s ease forwards;
+}
+
+.toast-container-top-center .toast-enter,
+.toast-container-bottom-center .toast-enter {
+    animation: slideInDown 0.3s ease forwards;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Toast Content */
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+}
+
+.toast-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: #1a202c;
+    word-break: break-word;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 1rem;
+    color: #718096;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    color: #2d3748;
+}
+
+/* Progress Bar */
+.toast-progress {
+    height: 3px;
+    background: rgba(0, 0, 0, 0.1);
+    transition: width 0.01s linear;
+}
+
+/* Toast Type Variants */
+.toast-success .toast-progress {
+    background: #48bb78;
+}
+
+.toast-error .toast-progress {
+    background: #f56565;
+}
+
+.toast-warning .toast-progress {
+    background: #ed8936;
+}
+
+.toast-info .toast-progress {
+    background: #4299e1;
+}
+
+/* Border left accent */
+.toast-success {
+    border-left: 4px solid #48bb78;
+}
+
+.toast-error {
+    border-left: 4px solid #f56565;
+}
+
+.toast-warning {
+    border-left: 4px solid #ed8936;
+}
+
+.toast-info {
+    border-left: 4px solid #4299e1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .toast-container {
+        max-width: calc(100% - 2rem);
+        min-width: auto;
+        left: 1rem;
+        right: 1rem;
+    }
+
+    .toast-container-top-center,
+    .toast-container-bottom-center {
+        transform: none;
+        left: 1rem;
+        right: 1rem;
+    }
+
+    .toast-container-top-center {
+        top: 1rem;
+    }
+
+    .toast-container-bottom-center {
+        bottom: 1rem;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .toast-enter,
+    .toast-exit {
+        animation: none;
+    }
+}
