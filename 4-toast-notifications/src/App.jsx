@@ -49,7 +49,7 @@ function App() {
         const parts = text.split(regex);
 
         return parts.map((part, i) =>
-            regex.test(part) ? (
+            i % 2 === 1 ? (
                 <mark key={i} className='highlight'>
                     {part}
                 </mark>
@@ -571,18 +571,17 @@ function App() {
                 {/* Loading more indicator */}
                 {loading && results.length > 0 && (
                     <div className='loading-more-skeletons'>
-                        {viewMode === 'blog' && (
+                        {viewMode === 'grid' && (
                             <SkeletonGrid
                                 columns={2}
                                 count={2}
                                 hasImage={true}
                             />
                         )}
-                        {viewMode === 'social' && <SkeletonFeed count={2} />}
-                        {viewMode === 'dashboard' && (
+                        {viewMode === 'list' && (
                             <div className='loading-more'>Loading more...</div>
                         )}
-                        {viewMode === 'product' && (
+                        {viewMode === 'profile' && (
                             <div className='loading-more'>Loading more...</div>
                         )}
                     </div>

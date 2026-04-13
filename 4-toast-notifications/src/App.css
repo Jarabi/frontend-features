@@ -117,26 +117,26 @@ header p {
   height: 20px;
   background: linear-gradient(90deg, #e2e8f0 25%, #edf2f7 50%, #e2e8f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: app-shimmer 1.5s infinite;
   border-radius: 4px;
   margin-bottom: 0.75rem;
   width: 70%;
 }
 
-.skeleton-text {
+.skeleton-item .skeleton-text {
   height: 14px;
   background: linear-gradient(90deg, #e2e8f0 25%, #edf2f7 50%, #e2e8f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: app-shimmer 1.5s infinite;
   border-radius: 4px;
   margin-bottom: 0.5rem;
 }
 
-.skeleton-text:last-child {
+.skeleton-item .skeleton-text:last-child {
   width: 80%;
 }
 
-@keyframes shimmer {
+@keyframes app-shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
@@ -594,7 +594,6 @@ header p {
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1.5rem;
-
   display: flex;
   justify-content: space-between;
   align-items: center;

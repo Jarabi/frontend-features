@@ -126,7 +126,7 @@ const PAGE_SIZE = 10; // change items per request
 
 ## File Structure
 
-```
+```text
 src/
   App.jsx               # Main component with search, cache, infinite scroll
   App.css               # Styles for layouts and skeletons

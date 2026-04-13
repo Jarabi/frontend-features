@@ -4,7 +4,7 @@ import './Toast.css';
 
 const Toast = ({ toast, onClose }) => {
     const [isExiting, setIsExiting] = useState(false);
-    const [progress, setProgress] = useState(false);
+    const [progress, setProgress] = useState(100);
 
     const { id, message, type, duration } = toast;
     const toastConfig = TOAST_TYPES[type] || TOAST_TYPES.info;
