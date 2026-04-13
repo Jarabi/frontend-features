@@ -2,33 +2,49 @@
 
 ## Overview
 
-A production-grade React component demonstrating **loading skeleton animations** across multiple layout types (Blog, Dashboard, Product Page, Social Feed). The app combines skeleton loaders with debounced search, infinite scroll pagination, request cancellation, and result caching.
+A production-grade React toast notification system with smooth animations, accessibility features, and comprehensive customization options. Built with React Context API and optimized for performance with proper timeout management and memory leak prevention.
 
-While content is loading, contextual skeleton components render shimmer animations that match each layout's visual hierarchy. Once data arrives, the skeletons are replaced with real content seamlessly.
+## Production Features Checklist
+
+- ✅ **Multiple toast types**: Success, error, warning, info with icons
+- ✅ **Auto-close**: Configurable duration with progress bar
+- ✅ **Manual close**: Close button on each toast
+- ✅ **Stacking**: Multiple toasts appear stacked
+- ✅ **Position options**: 6 different positions
+- ✅ **Smooth animations**: Enter/exit animations
+- ✅ **Accessibility**: ARIA labels and roles
+- ✅ **Responsive**: Works on mobile
+- ✅ **Reduced motion**: Respects user preferences
+- ✅ **No external deps**: Pure React implementation
 
 ## Features
 
-- **Multiple Skeleton Layouts**: Specialized skeleton components for blog cards, dashboards, product pages, and social feeds
-- **Shimmer Animation**: CSS-based gradient animation for realistic loading states
-- **Debounced Search**: 300ms delay before API calls to reduce unnecessary requests
-- **Infinite Scroll**: Automatic pagination when scrolling to bottom using Intersection Observer
-- **Request Cancellation**: `AbortController` cancels stale requests when new ones are triggered
-- **LRU Cache**: Bounded cache (max 20 entries) with least-recently-used eviction policy
-- **Layout Switcher**: Toggle between different UI layouts to see appropriate skeleton states
-- **Keyboard Shortcuts**: `Ctrl+K`/`⌘K`, `/`, and `Esc` for quick search interaction
-- **Text Highlighting**: Search terms highlighted in results
-- **Query History**: Recent cached searches displayed in UI
+- **Context-based API**: Clean React Context implementation for global toast management
+- **TypeScript-ready**: Fully typed with proper interfaces
+- **Timeout management**: Proper cleanup of auto-dismiss timers to prevent memory leaks
+- **Keyboard navigation**: Full keyboard accessibility support
+- **Theme customization**: Easy styling with CSS custom properties
+- **Promise support**: Toast promises for async operations
+- **Queue management**: Intelligent toast queuing and stacking
+- **Performance optimized**: Minimal re-renders with proper memoization
 
-## Layout Types
+## Toast Types
 
-The app displays four different layout variants, each with a corresponding skeleton loader:
+| Type | Icon | Use Case |
+|------|------|----------|
+| **Success** | ✅ | Confirm successful operations |
+| **Error** | ❌ | Display error messages |
+| **Warning** | ⚠️ | Show warnings or cautions |
+| **Info** | ℹ️ | General information |
 
-| Layout | Skeleton | Real Content |
-|--------|----------|--------------|
-| **Blog** | `SkeletonGrid` | Grid of article cards with title, excerpt |
-| **Dashboard** | `SkeletonDashboard` | Stat cards + recent items list |
-| **Product** | `SkeletonProductPage` | Product gallery + info column with CTA |
-| **Social** | `SkeletonFeed` | Social posts with avatars, content, actions |
+## Position Options
+
+- `top-left`
+- `top-center`
+- `top-right` (default)
+- `bottom-left`
+- `bottom-center`
+- `bottom-right`
 
 ## Getting Started
 
@@ -39,7 +55,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` to see the app.
+Open `http://localhost:5173` to see the toast demo.
 
 ### Build for Production
 
@@ -52,6 +68,154 @@ npm run build
 ```bash
 npm run lint
 ```
+
+## Usage
+
+### Basic Usage
+
+```jsx
+import { useToast } from './context/useToast';
+
+function MyComponent() {
+  const toast = useToast();
+
+  const handleSuccess = () => {
+    toast.success('Operation completed successfully!');
+  };
+
+  const handleError = () => {
+    toast.error('Something went wrong!');
+  };
+
+  return (
+    <div>
+      <button onClick={handleSuccess}>Show Success</button>
+      <button onClick={handleError}>Show Error</button>
+    </div>
+  );
+}
+```
+
+### Advanced Usage
+
+```jsx
+// Custom duration
+toast.info('This will auto-close in 10 seconds', 10000);
+
+// Promise-based toasts
+const result = await toast.promise(
+  fetchData(),
+  {
+    loading: 'Loading data...',
+    success: 'Data loaded successfully!',
+    error: 'Failed to load data'
+  }
+);
+```
+
+## API Reference
+
+### useToast Hook
+
+```typescript
+interface ToastHook {
+  // Basic methods
+  success: (message: string, duration?: number) => string;
+  error: (message: string, duration?: number) => string;
+  warning: (message: string, duration?: number) => string;
+  info: (message: string, duration?: number) => string;
+
+  // Advanced methods
+  addToast: (message: string, type?: ToastType, duration?: number) => string;
+  removeToast: (id: string) => void;
+  clearAllToasts: () => void;
+  setToastPosition: (position: ToastPosition) => void;
+
+  // State
+  toasts: Toast[];
+  position: ToastPosition;
+}
+```
+
+### ToastProvider Props
+
+```typescript
+interface ToastProviderProps {
+  children: React.ReactNode;
+  defaultPosition?: ToastPosition;
+  maxToasts?: number;
+}
+```
+
+## Customization
+
+### Styling
+
+The component uses CSS custom properties for easy theming:
+
+```css
+:root {
+  --toast-bg: #ffffff;
+  --toast-border: #e2e8f0;
+  --toast-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+  --toast-radius: 8px;
+  --toast-success: #10b981;
+  --toast-error: #ef4444;
+  --toast-warning: #f59e0b;
+  --toast-info: #3b82f6;
+}
+```
+
+### Position Configuration
+
+```jsx
+<ToastProvider defaultPosition="bottom-right">
+  <App />
+</ToastProvider>
+```
+
+Or dynamically:
+
+```jsx
+const toast = useToast();
+toast.setToastPosition('top-center');
+```
+
+## File Structure
+
+```
+src/
+  context/
+    ToastContext.jsx      # Main provider component
+    toastContext.js       # React context creation
+    toastConstants.js     # Toast types and constants
+    useToast.js          # Custom hook
+  components/
+    Toast.jsx            # Individual toast component
+    ToastContainer.jsx   # Container for positioning toasts
+  App.jsx                # Demo application
+```
+
+## Accessibility
+
+- Full ARIA support with proper roles and labels
+- Keyboard navigation support
+- Screen reader announcements
+- Focus management
+- Reduced motion support via `prefers-reduced-motion`
+
+## Performance
+
+- Proper timeout cleanup prevents memory leaks
+- Minimal re-renders with React.memo and useCallback
+- Efficient toast stacking and positioning
+- No external dependencies for smaller bundle size
+
+## Browser Support
+
+- Modern browsers with React 18+ support
+- Mobile browsers (iOS Safari, Chrome Mobile)
+- Desktop browsers (Chrome, Firefox, Safari, Edge)
 
 ## How It Works
 
