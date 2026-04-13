@@ -12,7 +12,7 @@ Building production-grade frontend features requires attention to performance, a
     + [Core Concepts](#core-concepts-1)
         - [Implementation Steps](#implementation-steps-1)
         - [Production‑Grade Considerations](#production-grade-considerations-1)
-* [3. Loading Skeletons](#3-loading-skeletons)
+* [3. Search + Infinite Scroll + Loading Skeletons](#3-search--infinite-scroll--loading-skeletons)
     + [Core Concepts](#core-concepts-2)
         - [Implementation Steps](#implementation-steps-2)
         - [Production‑Grade Considerations](#production-grade-considerations-2)
@@ -35,153 +35,166 @@ Building production-grade frontend features requires attention to performance, a
 
 ### Core Concepts
 
-- **Lazy loading**: Load content only when the user scrolls near the bottom.
-- **API pagination**: Use page numbers or cursor‑based pagination.
-- **Scroll event throttling/debouncing**: Avoid excessive callback invocations.
-- **Loading & end‑of‑data states**: Visual feedback for ongoing and finished loads.
+- **Intersection Observer API**: Modern, performant way to detect when elements enter the viewport
+- **Sentinel element**: Invisible element at the bottom that triggers loading when visible
+- **Request cancellation**: Abort in-flight requests using AbortController
+- **Error handling**: Display error messages with manual retry option
+- **Loading states**: Visual feedback during data fetching and completion detection
 
 #### Implementation Steps
 
-1. **Detect scroll position**
-    - Listen to `scroll` on the window or a scrollable container.
-    - Compute `scrollTop + clientHeight >= scrollHeight - threshold`.
-    - *Performance tip*: Use `requestAnimationFrame` or a debounced handler.
+1. **Set up Intersection Observer**
+    - Create observer watching a sentinel element at the bottom of the list
+    - Configure threshold (0.1) and rootMargin (100px) for preloading
+    - Trigger data fetch when sentinel becomes visible
 
 2. **Fetch paginated data**
-    - Maintain `page` state (or cursor).
-    - Append new items to existing list, never replace.
-    - Handle concurrent requests to avoid duplicate fetches (use a flag like `isLoading`).
+    - Maintain page state and increment on each load
+    - Use AbortController to cancel previous requests
+    - Append new items to existing list without replacement
 
-3. **Display states**
-    - Show a loading spinner at the bottom while fetching.
-    - When `hasMore` is `false`, show a “No more items” message.
-    - If an API error occurs, display an error message and optionally a retry button.
+3. **Handle loading states**
+    - Show loading spinner while fetching
+    - Display error message with retry button on failure
+    - Show completion message when all data is loaded
 
 #### Production‑Grade Considerations
 
-- **Scroll debouncing**: Use a throttled or debounced scroll handler (e.g., `Lodash` throttle with 100‑200ms) to reduce CPU load.
-- **Abort previous requests**: If a new fetch is triggered before the previous one finishes, cancel it using an `AbortController`.
-- **Accessibility**: Announce loading state and new content to screen readers (ARIA live regions).
-- **Edge cases**:
-    - Empty initial state.
-    - Rapid scroll while data is loading – ensure only one request at a time.
-    - Network flakiness – implement retry logic with exponential backoff.
-- **Performance**: Use `IntersectionObserver` instead of scroll listeners for better efficiency – it’s natively async and doesn’t block the main thread.
+- **Intersection Observer benefits**: Native async API, doesn't block main thread, better performance than scroll listeners
+- **Request cancellation**: Prevents race conditions and out-of-order responses
+- **Error resilience**: User-friendly error messages with manual retry capability
+- **Performance**: Preload data 100px before sentinel enters viewport
+- **Accessibility**: Proper ARIA labels and screen reader announcements
+- **Edge cases**: Handle empty initial state, network failures, and end-of-data detection
 
 ## 2. Debounced Search
 
 ### Core Concepts
 
-- **Debounce**: Delay API calls until the user stops typing (300‑500ms).
-- **Request cancellation**: Abort in‑flight requests when a new one starts.
-- **Visual feedback**: Loading indicator, “no results”, and optional highlighting.
+- **Debounce**: Delay API calls until the user stops typing (300ms default)
+- **Request cancellation**: Abort in-flight requests using AbortController
+- **Result caching**: Cache search results per query and page to avoid redundant requests
+- **Query history**: Display recent cached searches in the UI
+- **Keyboard shortcuts**: `Ctrl+K`/`⌘K`, `/`, and `Esc` for search interaction
+- **Infinite scroll**: Automatic pagination for search results
+- **Text highlighting**: Safe highlighting of matched search terms
 
 #### Implementation Steps
 
-1. **Capture user input**
-    - Bind `input` event to an input field.
-    - Use a debounce function (Lodash `debounce` or custom) to delay the search trigger.
+1. **Implement debounced search**
+    - Bind input event with 300ms debounce delay
+    - Use AbortController to cancel previous requests
+    - Cache results per query and page combination
 
-2. **Make the API call**
-    - On debounced trigger, set a `loading` state.
-    - Use `AbortController` to cancel previous unfinished requests.
-    - On success, update results and clear loading.
-    - On error, show an appropriate message.
+2. **Add keyboard shortcuts**
+    - `Ctrl+K`/`⌘K` and `/` to focus search input
+    - `Esc` to clear search and reset to default feed
+    - Global keydown listener for accessibility
 
-3. **Enhance results**
-    - Display a skeleton while loading.
-    - Show “No results found” when the result set is empty.
-    - Highlight matching text by replacing substrings with `<mark>` tags (sanitize to avoid XSS).
+3. **Display query history**
+    - Extract cache keys to show recent searches
+    - Allow clicking history items to re-run searches
+    - Maintain history state across sessions
+
+4. **Handle infinite scroll for search**
+    - Use Intersection Observer for pagination
+    - Maintain separate page state for search vs. default feed
+    - Append new results to existing search results
 
 #### Production‑Grade Considerations
 
-- **Debounce timing**: Choose a value that feels responsive but reduces API calls (commonly 300ms). Adjust based on expected data size and network latency.
-- **Request deduplication**: Cancel previous requests to avoid out‑of‑order responses (e.g., response for “a” arriving after “apple”).
-- **Accessibility**:
-    - Use `aria-live="polite"` on the results container.
-    - Announce loading status.
+- **Debounce timing**: 300ms balances responsiveness with API efficiency
+- **Request deduplication**: Cancel previous requests to prevent race conditions
+- **Caching strategy**: Cache per query/page prevents redundant API calls
+- **Keyboard accessibility**: Global shortcuts improve UX for power users
+- **Text highlighting**: Safe implementation prevents XSS attacks
+- **State management**: Separate state for search vs. default feed modes
 
-- **Optimistic UI**: Show stale results while loading? Usually clear or keep previous results – decide based on use case.
-- **Highlighting**: Use a safe method (e.g., `dangerouslySetInnerHTML` in React with sanitization, or use `innerHTML` after escaping the text).
-
-## 3. Loading Skeletons
+## 3. Search + Infinite Scroll + Loading Skeletons
 
 ### Core Concepts
 
-- **Skeleton UI**: Placeholder elements that mimic the final layout.
-- **Shimmer animation**: A moving gradient that indicates loading.
-- **Seamless transition**: Replace skeleton with actual content once data arrives.
+- **Combined features**: Debounced search, infinite scroll pagination, and contextual loading skeletons
+- **Multiple layout types**: Blog cards, dashboard stats, product pages, and social feeds
+- **Shimmer animations**: CSS-based gradient animations that match final content structure
+- **Layout switching**: Toggle between different UI layouts to see appropriate skeleton states
+- **LRU caching**: Bounded cache with least-recently-used eviction for search results
 
 #### Implementation Steps
 
-1. **Design skeletons**
-    - For lists: repeat a skeleton item with placeholder text and image.
-    - For cards: match image ratio, title width, and line count.
-    - For profile pages: avatar circle, name line, stats.
+1. **Debounced search with caching**
+    - 300ms debounce delay before API calls
+    - Cache search results per query and page
+    - Display cached query history in UI
 
-2. **Conditional rendering**
-    - Show skeleton while `isLoading` is true and no data exists (or during initial load).
-    - After data arrives, render the actual content.
-    - For subsequent fetches (e.g., infinite scroll), skeletons can appear at the bottom.
+2. **Infinite scroll with Intersection Observer**
+    - Automatic pagination when scrolling to bottom
+    - Request cancellation for stale requests
+    - Append new items to existing results
 
-3. **Shimmer effect**
-    - Use CSS `background: linear-gradient` that shifts horizontally.
-    - Animate with `@keyframes` to create a sweeping shine.
+3. **Contextual skeleton loading**
+    - Design skeletons that match each layout's visual hierarchy
+    - Show skeletons during initial load and subsequent fetches
+    - Seamless transition from skeleton to real content
+
+4. **Layout switching**
+    - Toggle between blog, dashboard, product, and social feed layouts
+    - Each layout has its own skeleton component
+    - Maintain search and scroll state across layout changes
 
 #### Production‑Grade Considerations
 
-- **Consistency**: The skeleton should have the same dimensions as the real content to avoid layout shifts (CLS). Use fixed aspect ratios or reserve space.
-- **Performance**: Skeletons are CSS‑only, so they are lightweight. Avoid JavaScript animations for shimmer.
-- **Accessibility**: Indicate that content is loading with `aria-busy="true"` and `aria-label="Loading content"`.
-- **State handling**: When data loads partially (e.g., list with multiple pages), only show skeletons for new items, not the entire list.
-- **Tools**: Libraries like `react-loading-skeleton` can simplify creation, but understanding the underlying CSS is valuable.
+- **Skeleton consistency**: Match skeleton dimensions to real content to prevent layout shifts
+- **Cache management**: Implement LRU eviction with configurable max entries (default: 20)
+- **Keyboard accessibility**: `Ctrl+K`/`⌘K`, `/`, and `Esc` shortcuts for search interaction
+- **Text highlighting**: Safe highlighting of search terms in results
+- **Request deduplication**: Cancel previous requests when new searches are triggered
+- **Performance**: Use CSS-only shimmer animations, avoid JavaScript animations
 
 ## 4. Toast Notifications
 
 ### Core Concepts
 
-- **Types**: success, error, warning, info – each with distinct icons/colors.
-- **Auto‑close**: Dismiss after a timeout (e.g., 3‑5 seconds).
-- **Manual close**: Provide a close button for each toast.
-- **Stacking**: Multiple toasts should appear without overlapping (usually vertical stack).
-- **Positioning**: Configurable placement (top‑right, bottom‑left, etc.).
+- **Multiple toast types**: Success, error, warning, info with distinct icons and colors
+- **Auto-close with timeout**: Configurable duration with progress indication
+- **Manual close**: Close button on each toast for immediate dismissal
+- **Stacking and positioning**: 6 different positions with intelligent stacking
+- **Smooth animations**: Enter/exit transitions with accessibility considerations
+- **Context-based API**: React Context for global toast management
+- **Timeout management**: Proper cleanup to prevent memory leaks
+- **Accessibility**: ARIA roles, keyboard navigation, screen reader support
 
 #### Implementation Steps
 
-1. **Create a toast store/context**
-    - Use a state management approach (React Context + reducer, or a global store).
-    - Each toast has: `id`, `type`, `message`, `duration`.
+1. **Set up React Context**
+    - Create ToastContext with provider and custom hook
+    - Manage toast state with add, remove, and clear functions
+    - Separate component exports from non-component code for Fast Refresh
 
-2. **Toast container component**
-    - Render a fixed‑position container (e.g., `position: fixed; top: 1rem; right: 1rem`).
-     -Map through toasts and render each with a transition (fade/slide).
+2. **Create toast components**
+    - Individual Toast component with type-specific styling
+    - ToastContainer for positioning and stacking
+    - Progress bar for auto-close indication
 
-3. **Auto‑close logic**
-    - Set a `setTimeout` when a toast is added.
-    - Clear timeout on manual close or component unmount.
+3. **Implement timeout management**
+    - Use Map to store timeout IDs for each toast
+    - Proper cleanup in removeToast, clearAllToasts, and unmount
+    - Prevent memory leaks with useRef and cleanup functions
 
-4. **Stacking**
-     - Use `flex-direction: column` to arrange toasts vertically.
-     - Ensure they don’t overlap by adjusting margins.
+4. **Add positioning and stacking**
+    - Support 6 positions: top/bottom-left/center/right
+    - Vertical stacking with proper spacing
+    - Maximum toast limits to prevent overflow
 
 #### Production‑Grade Considerations
 
-- **Accessibility**:
-    - Each toast should have `role="status"` or `role="alert"` based on importance.
-    - Auto‑close should not be too fast – allow users time to read.
-    - Provide a way to pause auto‑close on hover/focus.
-
-- **Performance**:
-    - Avoid memory leaks by cleaning timeouts.
-    - Use `useRef` or class properties to store timeouts.
-
-- **Customization**: Allow overriding default duration and position via configuration.
-
-- **Mobile**: Ensure toasts are large enough for touch and respect safe areas (notch, status bar).
-
-- **Edge cases**:
-    - Many toasts at once – cap maximum visible toasts (e.g., 5).
-    - Server‑side rendering (SSR): only render container after mount to avoid hydration mismatch.
+- **Memory leak prevention**: Proper timeout cleanup using Map-based storage
+- **Fast Refresh optimization**: Separate component and non-component exports
+- **Accessibility**: Full ARIA support, keyboard navigation, reduced motion respect
+- **Performance**: Minimal re-renders with proper memoization
+- **Mobile responsiveness**: Touch-friendly sizing and safe area support
+- **TypeScript ready**: Proper interfaces and type safety
+- **Promise support**: Toast promises for async operation feedback
 
 ## 5. Modal Dialogs
 
