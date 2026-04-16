@@ -32,6 +32,16 @@ const Toast = ({ toast, onClose }) => {
     // Handle manual close with animation
     const handleClose = () => {
         setIsExiting(true);
+
+        const prefersReducedMotion =
+            typeof window !== 'undefined' &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion) {
+            onClose(id);
+            return;
+        }
+
         setTimeout(() => {
             onClose(id);
         }, 300); // Match animation duration

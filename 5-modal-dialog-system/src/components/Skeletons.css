@@ -122,13 +122,13 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .skeleton-grid {
-        --grid-columns: 2 !important;
+        --grid-columns: 2;
     }
 }
 
 @media (max-width: 480px) {
     .skeleton-grid {
-        --grid-columns: 1 !important;
+        --grid-columns: 1;
     }
 }
 

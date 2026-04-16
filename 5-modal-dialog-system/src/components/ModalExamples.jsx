@@ -50,7 +50,7 @@ export const FormModal = ({ onSubmit, onCancel }) => {
             <div className='form-group'>
                 <label htmlFor='email'>Email:</label>
                 <input
-                    type='text'
+                    type='email'
                     id='email'
                     value={formData.email}
                     onChange={(e) =>

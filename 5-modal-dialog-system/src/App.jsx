@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useToast } from './context/useToast';
-// import { useModal } from './context/useModal';
 import {
     SkeletonGrid,
     SkeletonListItem,
@@ -19,7 +18,6 @@ function App() {
     // Get toast functions
     const { success, error, warning, info, setToastPosition, position } =
         useToast();
-    // const { openModal } = useModal();
 
     // Search state
     const [searchTerm, setSearchTerm] = useState('');
@@ -68,6 +66,11 @@ function App() {
         return query ? `${query}:${pageNum}` : `initial:${pageNum}`;
     };
 
+    const cacheRef = useRef(cache);
+    useEffect(() => {
+        cacheRef.current = cache;
+    }, [cache]);
+
     const touchCacheKey = useCallback((key) => {
         cacheOrderRef.current = [
             key,
@@ -82,6 +85,7 @@ function App() {
                     ...prev,
                     [key]: data,
                 };
+                cacheRef.current = next;
                 touchCacheKey(key);
                 if (Object.keys(next).length > MAX_CACHE_ENTRIES) {
                     const evictKey = cacheOrderRef.current.pop();
@@ -113,12 +117,12 @@ function App() {
 
             // Prevent concurrent fetches for the same logical request
             if (isFetchingRef.current && !isNewSearch) return;
-            isFetchingRef.current = true;
 
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
                 abortControllerRef.current = null;
             }
+            isFetchingRef.current = true;
 
             // Check cache first
             const cachedData = getCachedData(cacheKey);
@@ -146,39 +150,53 @@ function App() {
             abortControllerRef.current = controller;
 
             try {
-                let url;
-                if (query.trim()) {
-                    url = `${API_BASE}?q=${encodeURIComponent(query)}&_page=${pageNum}&_limit=${PAGE_SIZE}`;
-                } else {
-                    url = `${API_BASE}?_page=${pageNum}&_limit=${PAGE_SIZE}`;
-                }
+                // For search queries, we need to fetch more data and filter client-side
+                // since JSONPlaceholder doesn't support server-side search
+                const fetchLimit = query.trim() ? 100 : PAGE_SIZE; // Fetch more for search
+                const url = `${API_BASE}?_page=${pageNum}&_limit=${fetchLimit}`;
 
                 const response = await fetch(url, {
                     signal: controller.signal,
                 });
                 if (!response.ok) throw new Error('Failed to fetch');
 
-                const data = await response.json();
+                let data = await response.json();
                 if (controller.signal.aborted) return;
 
-                // Update cache with bounded eviction
-                addCacheEntry(cacheKey, data);
+                // Apply client-side filtering for search queries
+                if (query.trim()) {
+                    const searchTerm = query.toLowerCase();
+                    data = data.filter(
+                        (post) =>
+                            post.title.toLowerCase().includes(searchTerm) ||
+                            post.body.toLowerCase().includes(searchTerm),
+                    );
+                }
+
+                // Apply pagination after filtering
+                const startIndex = (pageNum - 1) * PAGE_SIZE;
+                const endIndex = startIndex + PAGE_SIZE;
+                const paginatedData = data.slice(startIndex, endIndex);
+
+                // Update cache with the filtered data
+                addCacheEntry(cacheKey, paginatedData);
 
                 // Update results
                 if (isNewSearch) {
-                    setResults(data);
-                    setTotalLoaded(data.length);
+                    setResults(paginatedData);
+                    setTotalLoaded(paginatedData.length);
                 } else {
-                    setResults((prev) => [...prev, ...data]);
-                    setTotalLoaded((prev) => prev + data.length);
+                    setResults((prev) => [...prev, ...paginatedData]);
+                    setTotalLoaded((prev) => prev + paginatedData.length);
 
-                    if (data.length > 0) {
-                        info(`Loaded ${data.length} more items`, 1500);
+                    if (paginatedData.length > 0) {
+                        info(`Loaded ${paginatedData.length} more items`, 1500);
                     }
                 }
 
-                // Check if there's more data
-                if (data.length < PAGE_SIZE) {
+                // Check if there's more data (based on filtered results)
+                const hasMoreData = data.length > endIndex;
+                if (!hasMoreData) {
                     setHasMore(false);
                     if (pageNum > 1) {
                         info("You've reached the end!", 2000);
@@ -187,15 +205,17 @@ function App() {
                     setHasMore(true);
                 }
 
-                if (isNewSearch && data.length === 0) {
+                if (isNewSearch && paginatedData.length === 0) {
                     setNoResults(true);
                     warning(`No results found for "${query}"`, 3000);
                 } else {
                     setNoResults(false);
-                    success(
-                        `Found ${data.length} results for "${query}"`,
-                        2000,
-                    );
+                    if (isNewSearch && query.trim()) {
+                        success(
+                            `Found ${data.length} results for "${query}"`,
+                            2000,
+                        );
+                    }
                 }
             } catch (err) {
                 if (err.name === 'AbortError') return;
@@ -214,12 +234,6 @@ function App() {
         },
         [addCacheEntry, getCachedData, success, error, warning, info],
     );
-
-    // Keep a ref in sync with cache state for reads without dependency
-    const cacheRef = useRef(cache);
-    useEffect(() => {
-        cacheRef.current = cache;
-    }, [cache]);
 
     // Reset everything for new search
     const resetAndSearch = useCallback(

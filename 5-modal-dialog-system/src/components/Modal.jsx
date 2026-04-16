@@ -8,7 +8,6 @@ const Modal = ({
     children,
     onClose,
     closeOnOutsideClick = true,
-    closeOnEsc = true,
 }) => {
     const modalRef = useRef(null);
     const previousFocusRef = useRef(null);
@@ -23,16 +22,16 @@ const Modal = ({
         // Focus the modal container
         modalRef.current.focus();
 
-        // Get all focusable elements inside modal
-        const focusableElements = modalRef.current.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        );
-
-        const firstFocusable = focusableElements[0];
-        const lastFocusable = focusableElements[focusableElements.length - 1];
-
         const handleTabKey = (e) => {
             if (e.key !== 'Tab') return;
+
+            const focusable =
+                modalRef.current?.querySelectorAll(
+                    'button:not(:disabled):not([aria-hidden="true"]), [href]:not([aria-hidden="true"]), input:not(:disabled):not([aria-hidden="true"]), select:not(:disabled):not([aria-hidden="true"]), textarea:not(:disabled):not([aria-hidden="true"]), [tabindex]:not([tabindex="-1"]):not(:disabled):not([aria-hidden="true"])',
+                ) ?? [];
+
+            const firstFocusable = focusable[0];
+            const lastFocusable = focusable[focusable.length - 1];
 
             if (e.shiftKey) {
                 // Shift + Tab: if on first element, move to last
@@ -60,22 +59,10 @@ const Modal = ({
 
     // Handle outside click
     const handleBackdropClick = (e) => {
-        if (closeOnOutsideClick && e.target === e.currenTarget) {
+        if (closeOnOutsideClick && e.target === e.currentTarget) {
             onClose(id);
         }
     };
-
-    // Handle ESC key
-    useEffect(() => {
-        const handleEsc = (e) => {
-            if (closeOnEsc && e.key === 'Escape') {
-                onClose(id);
-            }
-        };
-
-        window.addEventListener('keydown', handleEsc);
-        return () => window.removeEventListener('keydown', handleEsc);
-    }, [closeOnEsc, id, onClose]);
 
     return createPortal(
         <div
@@ -100,15 +87,15 @@ const Modal = ({
                         className='modal-close-btn'
                         onClick={() => onClose(id)}
                         aria-label='Close modal'
-                    >✕</button>
+                    >
+                        ✕
+                    </button>
                 </div>
 
-                <div className="modal-body">
-                    {children}
-                </div>
+                <div className='modal-body'>{children}</div>
             </div>
         </div>,
-        document.body
+        document.body,
     );
 };
 

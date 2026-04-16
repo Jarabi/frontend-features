@@ -10,7 +10,7 @@ export const ToastProvider = ({ children }) => {
 
     // Generate unique ID for each toast
     const generateId = () =>
-        `${Date.now()} - ${Math.random().toString(36).slice(2, 11)}`;
+        `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
     // Remove a specific toast
     const removeToast = useCallback((id) => {
@@ -85,7 +85,7 @@ export const ToastProvider = ({ children }) => {
     // Cleanup timeouts on unmount
     useEffect(() => {
         return () => {
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+            timeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
             timeoutsRef.current.clear();
         };
     }, []);

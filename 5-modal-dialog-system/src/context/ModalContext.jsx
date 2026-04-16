@@ -3,7 +3,6 @@ import { ModalContext } from "./modalContext";
 
 export const ModalProvider = ({children}) => {
     const [modals, setModals] = useState([]);
-    // const [isOpen, setIsOpen] = useState(false);
     const bodyRef = useRef(document.body);
 
     // Add a new modal
@@ -52,14 +51,16 @@ export const ModalProvider = ({children}) => {
 
     // ESC key handler
     useEffect(() => {
-        const handleKeyDown = (e => {
-            if (e.key === 'Escape' && hasOpenModals) {
-                const topModal = modals[modals.length - 1];
-                if (topModal?.closeOnEsc !== false) {
-                    closeTopModal();
-                }
-            }
-        });
+        const handleKeyDown = (e) => {
+            if (e.key !== 'Escape' && !hasOpenModals) return;
+
+            const topModal = modals[modals.length - 1];
+
+            if (topModal?.closeOnEsc === false) return;
+
+            topModal?.onClose?.(topModal.id);
+            closeTopModal();
+        };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);

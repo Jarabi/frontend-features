@@ -30,7 +30,7 @@
 }
 
 /* Modal Animations */
-@keyframes fadeIn {
+@keyframes fade-in {
     from {
         opacity: 0;
     }
@@ -39,7 +39,7 @@
     }
 }
 
-@keyframes slideUp {
+@keyframes slide-up {
     from {
         transform: translateY(30px);
         opacity: 0;
@@ -50,7 +50,7 @@
     }
 }
 
-@keyframes slideDown {
+@keyframes slide-down {
     from {
         transform: translateY(0);
         opacity: 1;
@@ -61,7 +61,7 @@
     }
 }
 
-@keyframes fadeOut {
+@keyframes fade-out {
     from {
         opacity: 1;
     }
@@ -71,20 +71,20 @@
 }
 
 .modal-fade-in {
-    animation: fadeIn 0.2s ease-out;
+    animation: fade-in 0.2s ease-out;
 }
 
 .modal-slide-up {
-    animation: slideUp 0.3s ease-out;
+    animation: slide-up 0.3s ease-out;
 }
 
 /* Modal exit animations (add these classes dynamically for closing) */
 .modal-overlay-exit {
-    animation: fadeOut 0.2s ease-out forwards;
+    animation: fade-out 0.2s ease-out forwards;
 }
 
 .modal-container-exit {
-    animation: slideDown 0.2s ease-out forwards;
+    animation: slide-down 0.2s ease-out forwards;
 }
 
 /* Modal Header */
