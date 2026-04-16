@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useToast } from './context/useToast';
+import { useModal } from './context/useModal';
 import {
     SkeletonGrid,
     SkeletonListItem,
@@ -18,6 +19,7 @@ function App() {
     // Get toast functions
     const { success, error, warning, info, setToastPosition, position } =
         useToast();
+    const { hasOpenModals } = useModal();
 
     // Search state
     const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +33,7 @@ function App() {
     const [hasMore, setHasMore] = useState(true);
     const [viewMode, setViewMode] = useState('grid');
     const [currentQuery, setCurrentQuery] = useState('');
+    const [searchFilteredResults, setSearchFilteredResults] = useState([]);
 
     const inputRef = useRef(null);
     const debounceTimerRef = useRef(null);
@@ -138,6 +141,8 @@ function App() {
 
                 if (cachedData.length < PAGE_SIZE) {
                     setHasMore(false);
+                } else {
+                    setHasMore(true);
                 }
                 isFetchingRef.current = false;
                 return;
@@ -150,35 +155,53 @@ function App() {
             abortControllerRef.current = controller;
 
             try {
-                // For search queries, we need to fetch more data and filter client-side
-                // since JSONPlaceholder doesn't support server-side search
-                const fetchLimit = query.trim() ? 100 : PAGE_SIZE; // Fetch more for search
-                const url = `${API_BASE}?_page=${pageNum}&_limit=${fetchLimit}`;
+                // For search queries, fetch all candidates once and filter client-side
+                // For non-search, fetch incrementally by page
+                const isSearchQuery = query.trim();
 
-                const response = await fetch(url, {
-                    signal: controller.signal,
-                });
-                if (!response.ok) throw new Error('Failed to fetch');
+                let data;
+                if (isSearchQuery && (isNewSearch || pageNum === 1)) {
+                    // First load of search: fetch all candidates
+                    const url = `${API_BASE}?_limit=100`;
+                    const response = await fetch(url, {
+                        signal: controller.signal,
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch');
 
-                let data = await response.json();
-                if (controller.signal.aborted) return;
+                    data = await response.json();
+                    if (controller.signal.aborted) return;
 
-                // Apply client-side filtering for search queries
-                if (query.trim()) {
+                    // Apply client-side filtering for search queries
                     const searchTerm = query.toLowerCase();
                     data = data.filter(
                         (post) =>
                             post.title.toLowerCase().includes(searchTerm) ||
                             post.body.toLowerCase().includes(searchTerm),
                     );
+
+                    // Store filtered results for pagination
+                    setSearchFilteredResults(data);
+                } else if (isSearchQuery && pageNum > 1) {
+                    // Pagination of search: use already-filtered results
+                    data = searchFilteredResults;
+                } else {
+                    // Non-search: fetch incrementally by page
+                    const url = `${API_BASE}?_page=${pageNum}&_limit=${PAGE_SIZE}`;
+                    const response = await fetch(url, {
+                        signal: controller.signal,
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch');
+
+                    data = await response.json();
+                    if (controller.signal.aborted) return;
                 }
 
-                // Apply pagination after filtering
+                // Apply pagination
                 const startIndex = (pageNum - 1) * PAGE_SIZE;
                 const endIndex = startIndex + PAGE_SIZE;
                 const paginatedData = data.slice(startIndex, endIndex);
 
-                // Update cache with the filtered data
+                // Update cache with the paginated data
                 addCacheEntry(cacheKey, paginatedData);
 
                 // Update results
@@ -194,7 +217,7 @@ function App() {
                     }
                 }
 
-                // Check if there's more data (based on filtered results)
+                // Check if there's more data (based on filtered results for search, raw for non-search)
                 const hasMoreData = data.length > endIndex;
                 if (!hasMoreData) {
                     setHasMore(false);
@@ -210,7 +233,7 @@ function App() {
                     warning(`No results found for "${query}"`, 3000);
                 } else {
                     setNoResults(false);
-                    if (isNewSearch && query.trim()) {
+                    if (isNewSearch && isSearchQuery) {
                         success(
                             `Found ${data.length} results for "${query}"`,
                             2000,
@@ -232,7 +255,15 @@ function App() {
                 }
             }
         },
-        [addCacheEntry, getCachedData, success, error, warning, info],
+        [
+            addCacheEntry,
+            getCachedData,
+            success,
+            error,
+            warning,
+            info,
+            searchFilteredResults,
+        ],
     );
 
     // Reset everything for new search
@@ -242,6 +273,7 @@ function App() {
             setPage(1);
             setHasMore(true);
             setResults([]);
+            setSearchFilteredResults([]);
             setNoResults(false);
             setErrorState(null);
             setCurrentQuery(query);
@@ -340,7 +372,7 @@ function App() {
                 info('Search focused - start typing!', 1500);
             }
 
-            if (event.key === 'Escape') {
+            if (event.key === 'Escape' && !hasOpenModals) {
                 if (debounceTimerRef.current) {
                     clearTimeout(debounceTimerRef.current);
                     debounceTimerRef.current = null;
@@ -354,7 +386,7 @@ function App() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [resetAndSearch, info]);
+    }, [resetAndSearch, info, hasOpenModals]);
 
     // Cleanup on unmount
     useEffect(() => {

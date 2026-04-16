@@ -13,7 +13,6 @@ const ModalContainer = () => {
                     title={modal.title}
                     onClose={closeModal}
                     closeOnOutsideClick={modal.closeOnOutsideClick !== false}
-                    closeOnEsc={modal.closeOnEsc !== false}
                 >
                     {modal.content}
                 </Modal>

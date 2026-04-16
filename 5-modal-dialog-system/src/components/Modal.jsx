@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './Modal.css';
 
@@ -11,6 +11,8 @@ const Modal = ({
 }) => {
     const modalRef = useRef(null);
     const previousFocusRef = useRef(null);
+    const closeTimeoutRef = useRef(null);
+    const [isClosing, setIsClosing] = useState(false);
 
     // Focus trap: keep focus inside modal
     useEffect(() => {
@@ -57,16 +59,34 @@ const Modal = ({
         };
     }, []);
 
+    const closeModal = () => {
+        if (isClosing) return;
+        setIsClosing(true);
+
+        closeTimeoutRef.current = window.setTimeout(() => {
+            onClose(id);
+        }, 200);
+    };
+
     // Handle outside click
     const handleBackdropClick = (e) => {
+        if (isClosing) return;
         if (closeOnOutsideClick && e.target === e.currentTarget) {
-            onClose(id);
+            closeModal();
         }
     };
 
+    useEffect(() => {
+        return () => {
+            if (closeTimeoutRef.current) {
+                clearTimeout(closeTimeoutRef.current);
+            }
+        };
+    }, []);
+
     return createPortal(
         <div
-            className='modal-overlay modal-fade-in'
+            className={`modal-overlay modal-fade-in ${isClosing ? 'modal-overlay-exit' : ''}`}
             onClick={handleBackdropClick}
             role='dialog'
             aria-modal='true'
@@ -74,7 +94,7 @@ const Modal = ({
         >
             <div
                 ref={modalRef}
-                className='modal-container modal-slide-up'
+                className={`modal-container modal-slide-up ${isClosing ? 'modal-container-exit' : ''}`}
                 tabIndex={-1}
             >
                 <div className='modal-header'>
@@ -85,7 +105,7 @@ const Modal = ({
                     )}
                     <button
                         className='modal-close-btn'
-                        onClick={() => onClose(id)}
+                        onClick={closeModal}
                         aria-label='Close modal'
                     >
                         ✕
