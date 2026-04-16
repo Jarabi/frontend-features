@@ -200,52 +200,76 @@ Building production-grade frontend features requires attention to performance, a
 
 ### Core Concepts
 
-- **Focus trap**: Keep keyboard focus inside the modal.
-- **Backdrop**: Click outside to close (optional, but common).
-- **Esc key**: Close modal on `Escape`.
-- **Scroll lock**: Prevent scrolling of background content.
-- **Animation**: Smooth entrance/exit (fade, scale).
+- **Stacked modal provider**: Manage multiple open modals as a stack with a single shared provider
+- **Focus trap**: Keep keyboard focus inside the active modal and skip disabled/hidden elements
+- **Esc to close**: Close the top modal with `Escape`, unless explicitly disabled
+- **Outside click**: Configurable backdrop close behavior per modal
+- **Scroll lock**: Prevent background scrolling while any modal is open
+- **Exit animation**: Delay unmount until fade-out / slide-down transitions complete
+- **Focus restoration**: Return focus to the trigger element after the modal closes
+- **Accessibility**: `role="dialog"`, `aria-modal="true"`, proper focus behavior and labels
+- **Responsive**: Modal content adapts to smaller screens and internal scrolling
+- **Pure React**: No external modal libraries required
 
 #### Implementation Steps
 
-1. **Modal structure**
-    - A backdrop (semi‑transparent overlay).
-    - A content container (dialog).
-    - Use `role="dialog"` and `aria-modal="true"`.
+1. **Modal provider & context**
+    - Use `ModalProvider` to store modal configs and stack order.
+    - Expose `openModal`, `closeModal`, `closeTopModal`, and `closeAllModals` via `useModal()`.
 
-2. **Open/close state**
-    - Controlled via boolean state.
+2. **Render modal stack**
+    - Use `ModalContainer` to render each modal entry from context.
+    - Keep each modal in the DOM until its exit animation finishes.
 
-3. **Focus trap**
-    - When modal opens, trap focus inside the modal (usually the first focusable element).
-    - Use `focus` event listeners and a loop to keep focus inside.
+3. **Focus trapping**
+    - On open, focus the modal container and remember the previous active element.
+    - Trap Tab / Shift+Tab navigation inside the active modal.
+    - Exclude disabled controls and `aria-hidden="true"` elements from the focus set.
 
-4. **Esc key handler**
-    - Listen for `keydown` event and close if `key === "Escape"`.
+4. **Keyboard shortcuts**
+    - Close top modal on `Escape` when allowed.
+    - Ensure only the top modal is affected in stacked scenarios.
 
-5. **Background scroll lock**
-    - Add `overflow: hidden` to `<body>` when modal is open.
+5. **Backdrop and outside click**
+    - Close the modal when the user clicks the overlay, if `closeOnOutsideClick` is enabled.
+    - Ignore clicks inside the modal content.
 
-6. **Animations**
-    - Use CSS transitions on `opacity` and `transform`.
-    - Remove modal from DOM after transition completes to improve performance.
+6. **Scroll lock**
+    - Manage `document.body.style.overflow = 'hidden'` while any modal is open.
+    - Restore the original overflow value when the final modal closes.
+
+7. **Exit animation handling**
+    - Use an `isClosing` flag instead of immediately unmounting.
+    - Apply `-exit` CSS classes to overlay and container.
+    - Call `onClose(id)` only after the transition completes or a matching timeout.
 
 #### Production‑Grade Considerations
 
 - **Accessibility**:
-    - Manage `aria-hidden` on background content.
-    - Ensure focus returns to the trigger element after closing.
-    - Support screen readers by announcing modal opening.
+    - Support screen readers with `role="dialog"`, `aria-modal="true"`, and meaningful titles.
+    - Restore focus to the opening trigger element after close.
+    - Ensure keyboard navigation remains trapped inside the active modal.
 
-- **Performance**:
-    - Lazy load modal content if heavy (e.g., use React.lazy).
-    - Ensure animations use `transform/opacity` (GPU‑accelerated).
+- **Animation timing**:
+    - Keep entrance and exit durations consistent between CSS and JS delays.
+    - Provide reduced-motion support if needed.
 
-- **Edge cases**:
-    - Nested modals (rare, but if needed, manage focus trapping accordingly).
-    - Modal content that is taller than the viewport – ensure scrolling inside modal works without affecting background.
+- **Stacked modals**:
+    - Manage only the top modal for ESC and outside-click closing.
+    - Keep earlier modals in the DOM while stacked.
 
-- **Cross‑browser**: Scroll lock may have subtle differences – test on all major browsers.
+- **Responsiveness**:
+    - Use max-widths and internal scroll for large content.
+    - Ensure the modal remains usable on phones and tablets.
+
+- **Clean cleanup**:
+    - Clear any close timers on unmount.
+    - Remove global event listeners and restore focus reliably.
+
+- **Testing**:
+    - Validate tab order and focus trapping.
+    - Test closing via button, ESC, and backdrop click.
+    - Verify scroll lock and focus restoration across stacked modals.
 
 ## 6. Drag and Drop
 
