@@ -175,11 +175,25 @@
     color: #2d3748;
 }
 
+.toast-close:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 /* Progress Bar */
 .toast-progress {
     height: 3px;
     background: rgba(0, 0, 0, 0.1);
-    transition: width 0.01s linear;
+    width: 100%;
+    transform-origin: left;
+}
+
+/* Reduced motion: disable transition */
+@media (prefers-reduced-motion: reduce) {
+    .toast-progress {
+        transition: none;
+    }
 }
 
 /* Toast Type Variants */

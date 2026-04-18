@@ -576,7 +576,8 @@ header p {
   .spinner-small,
   .skeleton-title,
   .skeleton-text,
-  .loading-more-skeletons {
+  .loading-more-skeletons,
+  .dragdrop-loading .spinner {
     animation: none;
   }
 

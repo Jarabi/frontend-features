@@ -161,6 +161,9 @@ function App() {
                 const isSearchQuery = query.trim();
 
                 let data;
+                let paginatedData;
+                let totalAvailable;
+            
                 if (isSearchQuery && (isNewSearch || pageNum === 1)) {
                     // First load of search: fetch all candidates
                     const url = `${API_BASE}?_limit=100`;
@@ -182,9 +185,11 @@ function App() {
 
                     // Store filtered results for pagination
                     setSearchFilteredResults(data);
+                    totalAvailable = data.length;
                 } else if (isSearchQuery && pageNum > 1) {
                     // Pagination of search: use already-filtered results
                     data = searchFilteredResults;
+                    totalAvailable = data.length;
                 } else {
                     // Non-search: fetch incrementally by page
                     const url = `${API_BASE}?_page=${pageNum}&_limit=${PAGE_SIZE}`;
@@ -195,12 +200,18 @@ function App() {
 
                     data = await response.json();
                     if (controller.signal.aborted) return;
+                    paginatedData = data;
+                    totalAvailable =
+                        pageNum * PAGE_SIZE +
+                        (data.length === PAGE_SIZE ? 1 : 0);
                 }
 
                 // Apply pagination
-                const startIndex = (pageNum - 1) * PAGE_SIZE;
-                const endIndex = startIndex + PAGE_SIZE;
-                const paginatedData = data.slice(startIndex, endIndex);
+                if (!paginatedData) {
+                    const startIndex = (pageNum - 1) * PAGE_SIZE;
+                    const endIndex = startIndex + PAGE_SIZE;
+                    paginatedData = data.slice(startIndex, endIndex);
+                }
 
                 // Update cache with the paginated data
                 addCacheEntry(cacheKey, paginatedData);
@@ -218,8 +229,10 @@ function App() {
                     }
                 }
 
-                // Check if there's more data (based on filtered results for search, raw for non-search)
-                const hasMoreData = data.length > endIndex;
+                const hasMoreData = isSearchQuery
+                    ? totalAvailable > pageNum * PAGE_SIZE
+                    : paginatedData.length === PAGE_SIZE;
+                
                 if (!hasMoreData) {
                     setHasMore(false);
                     if (pageNum > 1) {
@@ -249,7 +262,7 @@ function App() {
                     setResults([]);
                 }
             } finally {
-                if (!controller.signal.aborted) {
+                if (abortControllerRef.current === controller) {
                     abortControllerRef.current = null;
                     setLoading(false);
                     isFetchingRef.current = false;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useModal } from '../context/useModal';
 import { useToast } from '../context/useToast';
 
@@ -27,6 +27,8 @@ export const ConfirmationModal = ({
 // Form modal example
 export const FormModal = ({ onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({ name: '', email: '' });
+    const nameId = useId();
+    const emailId = useId();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -36,10 +38,9 @@ export const FormModal = ({ onSubmit, onCancel }) => {
     return (
         <form onSubmit={handleSubmit}>
             <div className='form-group'>
-                <label htmlFor='name'>Name:</label>
+                <label htmlFor={nameId}>Name:</label>
                 <input
                     type='text'
-                    id='name'
                     value={formData.name}
                     onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
@@ -48,10 +49,9 @@ export const FormModal = ({ onSubmit, onCancel }) => {
                 />
             </div>
             <div className='form-group'>
-                <label htmlFor='email'>Email:</label>
+                <label htmlFor={emailId}>Email:</label>
                 <input
                     type='email'
-                    id='email'
                     value={formData.email}
                     onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })

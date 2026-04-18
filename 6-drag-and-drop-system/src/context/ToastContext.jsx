@@ -27,10 +27,11 @@ export const ToastProvider = ({ children }) => {
     const addToast = useCallback(
         (message, type = 'info', duration = 5000) => {
             const id = generateId();
+            const normalizedType = TOAST_TYPES[type] ? type : 'info';
             const newToast = {
                 id,
                 message,
-                type,
+                type: normalizedType,
                 duration,
                 timestamp: Date.now(),
             };

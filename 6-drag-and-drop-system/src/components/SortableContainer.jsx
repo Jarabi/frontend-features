@@ -32,7 +32,7 @@ const SortableContainer = ({
     saveOrderFn,
 }) => {
     const [activeId, setActiveId] = useState(null);
-    const { setIsDragging, saving } = useDragDrop();
+    const { setIsDragging, saving, saveOrder } = useDragDrop();
     const { info } = useToast();
 
     // Configure sensors for mouse, touch, and keyboard
@@ -84,7 +84,10 @@ const SortableContainer = ({
 
         // Save to backend
         if (saveOrderFn) {
-            await saveOrderFn(newOrder);
+            const saved = await saveOrder(newOrder, saveOrderFn);
+            if (!saved) {
+                onOrderChange(items);
+            }
         }
     };
 

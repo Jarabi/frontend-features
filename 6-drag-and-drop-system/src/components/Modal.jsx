@@ -5,6 +5,7 @@ import './Modal.css';
 const Modal = ({
     id,
     title,
+    ariaLabel,
     children,
     onClose,
     closeOnOutsideClick = true,
@@ -91,6 +92,7 @@ const Modal = ({
             role='dialog'
             aria-modal='true'
             aria-labelledby={title ? `modal-title-${id}` : undefined}
+            aria-label={!title ? ariaLabel || 'Dialog' : undefined}
         >
             <div
                 ref={modalRef}

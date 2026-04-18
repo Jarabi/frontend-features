@@ -1,8 +1,8 @@
 import './Skeletons.css';
 
-const toSafeCount = (value, fallBack = 0) => {
+const toSafeCount = (value, fallback = 0) => {
     const n = Number(value);
-    return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallBack;
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
 };
 
 // Base skeleton with shimmer animation
@@ -11,6 +11,7 @@ export const Skeleton = ({
     height,
     borderRadius = '8px',
     className = '',
+    style = {},
 }) => (
     <div
         aria-hidden='true'
@@ -19,6 +20,7 @@ export const Skeleton = ({
             width: width || '100%',
             height: height || '100%',
             borderRadius,
+            ...style,
         }}
     />
 );
@@ -29,7 +31,7 @@ export const SkeletonText = ({
     lineHeight = '1.5rem',
     lastLineWidth = '60%',
 }) => {
-    const safeLines = toSafeCount(lines);
+    const safeLines = toSafeCount(lines, 1);
     return (
         <div className='skeleton-text'>
             {Array.from({ length: safeLines }, (_, i) => (
@@ -98,7 +100,7 @@ export const SkeletonProfile = () => (
         </div>
         <SkeletonText lines={3} lineHeight='1rem' />
         <div className='skeleton-profile-stats'>
-            {[...Array(3)].map((_, i) => (
+            {Array.from({ length: 3 }, (_, i) => (
                 <div key={i} className='skeleton-stat'>
                     <Skeleton width='60px' height='20px' />
                     <Skeleton width='40px' height='16px' />
@@ -111,7 +113,7 @@ export const SkeletonProfile = () => (
 // Grid of cards (for product listings, galleries)
 export const SkeletonGrid = ({ columns = 3, count = 6, hasImage = true }) => (
     <div className='skeleton-grid' style={{ '--grid-columns': columns }}>
-        {[...Array(toSafeCount(count))].map((_, i) => (
+        {Array.from({ length: toSafeCount(count, 6) }, (_, i) => (
             <SkeletonCard key={i} hasImage={hasImage} />
         ))}
     </div>
@@ -121,7 +123,7 @@ export const SkeletonGrid = ({ columns = 3, count = 6, hasImage = true }) => (
 export const SkeletonComments = ({ count = 3 }) => (
     <div className='skeleton-comments'>
         <Skeleton width='150px' height='24px' borderRadius='4px' />
-        {[...Array(toSafeCount(count))].map((_, i) => (
+        {Array.from({ length: toSafeCount(count, 3) }, (_, i) => (
             <SkeletonListItem key={i} />
         ))}
     </div>

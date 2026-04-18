@@ -75,7 +75,7 @@ const TaskItem = ({ task }) => (
 
 const DragDropDemo = () => {
     const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { success, error: showError } = useToast();
 
     // Load initial items
@@ -85,7 +85,7 @@ const DragDropDemo = () => {
                 const data = await fetchTasks();
                 setItems(data);
             } catch (err) {
-                showError('Failed to load tasks:', err);
+                showError(`Failed to load tasks: ${err.message ?? err}`);
             } finally {
                 setLoading(false);
             }
@@ -102,14 +102,18 @@ const DragDropDemo = () => {
             await saveOrder(newOrder);
             success('Order saved successfully!', 2000);
         } catch (err) {
-            showError('Failed to save order:', err);
+            showError(`Failed to save order: ${err.message ?? err}`);
         }
     };
 
     const handleResetOrder = async () => {
-        const originalData = await fetchTasks();
-        setItems(originalData);
-        success('Order reset to original.', 2000);
+        try {
+            const originalData = await fetchTasks();
+            setItems(originalData);
+            success('Order reset to original.', 2000);
+        } catch (err) {
+            showError(`Failed to reset order: ${err.message ?? err}`);
+        }
     };
 
     if (loading) {

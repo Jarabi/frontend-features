@@ -52,7 +52,7 @@ export const ModalProvider = ({children}) => {
     // ESC key handler
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key !== 'Escape' && !hasOpenModals) return;
+            if (e.key !== 'Escape' || !hasOpenModals) return;
 
             const topModal = modals[modals.length - 1];
 
