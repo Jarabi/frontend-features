@@ -275,53 +275,81 @@ Building production-grade frontend features requires attention to performance, a
 
 ### Core Concepts
 
-- **Drag indicator**: Visual feedback during drag (e.g., ghost image, cursor change).
-- **Reorder animation**: Smooth movement of items when dropped.
-- **Mobile support**: Touch events (`touchstart`, `touchmove`, `touchend`).
-- **Backend sync**: Save new order after reorder.
+- **@dnd-kit library**: Modern, accessible drag-and-drop with modular components (core, sortable, utilities)
+- **Drag handle**: Dedicated grab handle with visual indicator for initiating drags
+- **Visual feedback**: Opacity changes, shadow enhancement, and transform effects during drag
+- **Ghost image**: Custom drag overlay with elevated styling during drag operation
+- **Mobile support**: Touch events with activation constraint (8px) to prevent accidental drags
+- **Keyboard accessibility**: Full keyboard navigation with Space/Enter to grab, arrow keys to reorder
+- **Auto-save**: Automatic backend sync on drop via API call
+- **Error handling**: Toast notifications for load, save, and reset failures
+- **Loading states**: Initial load spinner and saving indicators
+- **Reduced motion**: Respects `prefers-reduced-motion` for users who prefer no animations
 
 #### Implementation Steps
 
-1. **Make elements draggable**
-    - Use `draggable=true` for HTML5 drag‑and‑drop (limited styling) or implement custom with mouse/touch events.
+1. **Set up dnd-kit**
+    - Wrap with `DndContext` using `closestCenter` collision detection
+    - Use `SortableContext` with `verticalListSortingStrategy` for list items
+    - Implement `useSortable` hook on each draggable item
 
-2. **Custom drag logic** (recommended for fine control)
-    - On `mousedown/touchstart`, record initial position and clone the element.
-    - On `mousemove/touchmove`, move the clone and update drop target highlight.
-    - On `mouseup/touchend`, determine the new index and update the list.
+2. **Create draggable items**
+    - Use `useSortable` hook to get `transform`, `transition`, `isDragging` properties
+    - Apply inline styles from `CSS.Transform.toString(transform)`
+    - Add `dragging` class for visual feedback (opacity: 0.5, enhanced shadow)
 
-3. **Reorder items**
-    - Use state management to rearrange the list array.
-    - Animate items to their new positions using CSS transitions or a library like `framer-motion`.
+3. **Add drag handle**
+    - Separate button element with `drag-handle` class
+    - Bind `attributes` and `listeners` from `useSortable` to the handle
+    - Add `aria-label="Drag to reorder"` for accessibility
 
-4. **Mobile support**
-    - Use `touch` events with `preventDefault` to avoid page scroll.
-    - Ensure touch targets are at least 44x44px.
+4. **Handle drag end**
+    - Calculate new index from `active` and `over` sensors
+    - Reorder array using splice operations
+    - Trigger auto-save to backend via `saveOrder` API
 
-5. **Sync with backend**
-    - After a successful reorder, send the new order to the API (e.g., PATCH with array of ids).
-    - Handle optimistic updates or rollback on error.
+5. **Add keyboard support**
+    - dnd-kit provides keyboard sensors automatically
+    - Space/Enter to grab, arrow keys to move, Space/Enter to drop
+    - Focus visible styles on interactive elements
+
+6. **Implement loading and error states**
+    - Show spinner during initial load and on save
+    - Wrap async operations in try/catch
+    - Display toast notifications on failures
 
 #### Production‑Grade Considerations
 
 - **Accessibility**:
-    - Provide keyboard accessibility (arrow keys to reorder).
-    - Add ARIA roles (`role="listbox"`, `aria-grabbed`).
+    - Keyboard navigation with Space/Enter to grab and arrow keys to reorder
+    - ARIA labels on drag handles (`aria-label="Drag to reorder"`)
+    - Focus visible styles on buttons and modals
+    - Screen reader support via `role="list"` and proper labels
 
 - **Performance**:
-    - Use `transform: translate3d` for smooth dragging.
-    - Throttle move events to reduce layout recalculations.
+    - Use CSS `transform` for smooth dragging (GPU accelerated)
+    - Avoid layout thrashing with throttled event handlers
+    - Minimal re-renders with proper React optimization
 
-- **Edge cases**:
-    - Dropping outside the container – cancel drag.
-    - Reorder within scrollable containers – automatically scroll near edges.
-    - Handling nested drag‑and‑drop (e.g., boards with cards).
+- **Visual feedback**:
+    - Hover transform on non-dragging items only (`:hover:not(.dragging)`)
+    - Enhanced shadow during drag operation
+    - Smooth CSS transitions for all interactive states
+
+- **Error resilience**:
+    - Toast notifications for all async failures (load, save, reset)
+    - Error messages include fallback text for missing error details
+    - Loading states prevent double-submissions
+
+- **Reduced motion**:
+    - CSS transitions disabled via `prefers-reduced-motion: reduce`
+    - Progress bar animations disabled for toasts
+    - Focus outline animations simplified
 
 - **Testing**:
-    - Simulate drag events in unit tests (e.g., using `fireEvent` in React Testing Library).
-    - Test on actual touch devices.
-
-- **Libraries**: For complex UIs, consider production‑ready libraries like `react-beautiful-dnd` (now `@hello-pangea/dnd`), `dnd-kit`, or `SortableJS`. Understanding the underlying principles is still crucial.
+    - Test drag operations with mouse and touch inputs
+    - Verify keyboard navigation works correctly
+    - Test error scenarios and toast display
 
 #### General Production‑Grade Principles for All Features
 
