@@ -17,9 +17,9 @@ const features = [
         id: 2,
         title: 'Debounced Search',
         description:
-            'Smart search with 300ms debounce, request cancellation, result caching, text highlighting, and keyboard shortcuts (⌘K).',
+            'Smart search with 300ms debounce, request cancellation, result caching, text highlighting, and keyboard shortcuts.',
         icon: '🔍',
-        color: '#10b981',
+        color: '#3b82f6',
         path: '../2-debounced-search',
         tags: ['Performance', 'Caching', 'UX'],
         difficulty: 'Intermediate',
@@ -30,7 +30,7 @@ const features = [
         description:
             'Beautiful skeleton screens with shimmer animations, multiple layout patterns (grid, list, profile), and reduced motion support.',
         icon: '💀',
-        color: '#f59e0b',
+        color: '#10b981',
         path: '../3-search-scroll-skeletons',
         tags: ['UX', 'Animations', 'Accessibility'],
         difficulty: 'Beginner',
@@ -41,7 +41,7 @@ const features = [
         description:
             'Fully-featured toast system with multiple types (success/error/warning/info), stacking, auto-close, progress bars, and 6 positions.',
         icon: '🍞',
-        color: '#ef4444',
+        color: '#10b981',
         path: '../4-toast-notifications',
         tags: ['UX', 'Accessibility', 'Animations'],
         difficulty: 'Beginner',
@@ -52,7 +52,7 @@ const features = [
         description:
             'Accessible modal dialogs with focus trap, ESC to close, scroll lock, backdrop click, smooth animations, and stacking support.',
         icon: '🎭',
-        color: '#8b5cf6',
+        color: '#ef4444',
         path: '../5-modal-dialog-system',
         tags: ['Accessibility', 'Focus Management', 'Animations'],
         difficulty: 'Advanced',
@@ -63,7 +63,7 @@ const features = [
         description:
             'Sortable drag and drop with touch/mobile support, keyboard accessibility, smooth animations, auto-save, and backend sync.',
         icon: '🔄',
-        color: '#ec4899',
+        color: '#ef4444',
         path: '../6-drag-and-drop-system',
         tags: ['Accessibility', 'Mobile', 'Animations'],
         difficulty: 'Advanced',
@@ -72,7 +72,6 @@ const features = [
 
 const stats = [
     { label: 'Features', value: '6', icon: '✨' },
-    { label: 'Hours Saved', value: '100+', icon: '⏱️' },
     { label: 'Lines of Code', value: '5k+', icon: '📝' },
     { label: 'Best Practices', value: '100%', icon: '🎯' },
 ];
@@ -157,14 +156,6 @@ function LandingPage() {
                             <span className='btn-icon'>→</span>
                         </button>
                     </div>
-                </div>
-                <div className='hero-graphic'>
-                    <div className='floating-card card-1'>📜</div>
-                    <div className='floating-card card-2'>🔍</div>
-                    <div className='floating-card card-3'>💀</div>
-                    <div className='floating-card card-4'>🍞</div>
-                    <div className='floating-card card-5'>🎭</div>
-                    <div className='floating-card card-6'>🔄</div>
                 </div>
             </section>
 
