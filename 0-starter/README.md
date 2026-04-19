@@ -1,3 +1,0 @@
-# Frontend Features
-
-Starter files.
