@@ -40,6 +40,7 @@ export const FormModal = ({ onSubmit, onCancel }) => {
             <div className='form-group'>
                 <label htmlFor={nameId}>Name:</label>
                 <input
+                    id={nameId}
                     type='text'
                     value={formData.name}
                     onChange={(e) =>
@@ -51,6 +52,7 @@ export const FormModal = ({ onSubmit, onCancel }) => {
             <div className='form-group'>
                 <label htmlFor={emailId}>Email:</label>
                 <input
+                    id={emailId}
                     type='email'
                     value={formData.email}
                     onChange={(e) =>

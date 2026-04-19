@@ -59,12 +59,12 @@ export const ModalProvider = ({children}) => {
             if (topModal?.closeOnEsc === false) return;
 
             topModal?.onClose?.(topModal.id);
-            closeTopModal();
+            closeTopModal(topModal.id);
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [hasOpenModals, modals, closeTopModal]);
+    }, [hasOpenModals, modals, closeModal]);
 
     const value = {
         modals,

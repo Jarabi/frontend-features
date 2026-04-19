@@ -103,12 +103,14 @@ const DragDropDemo = () => {
             success('Order saved successfully!', 2000);
         } catch (err) {
             showError(`Failed to save order: ${err.message ?? err}`);
+            throw err;
         }
     };
 
     const handleResetOrder = async () => {
         try {
             const originalData = await fetchTasks();
+            await saveOrder(originalData);
             setItems(originalData);
             success('Order reset to original.', 2000);
         } catch (err) {
