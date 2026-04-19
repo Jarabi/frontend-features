@@ -7,8 +7,8 @@
 
 body {
     font-family:
-        -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', sans-serif;
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+        sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     overflow-x: hidden;
 }
@@ -316,7 +316,7 @@ body {
     padding: 1.5rem;
     transition: all 0.3s ease;
     opacity: 0;
-    animation: fadeInUp 0.5s ease forwards;
+    animation: fade-in-up 0.5s ease forwards;
     cursor: pointer;
 }
 
@@ -325,7 +325,7 @@ body {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
     from {
         opacity: 0;
         transform: translateY(20px);

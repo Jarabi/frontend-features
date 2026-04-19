@@ -117,8 +117,8 @@ function LandingPage() {
                         and performance-optimized.
                     </p>
                     <div className='hero-stats'>
-                        {stats.map((stat) => (
-                            <div key={stat.id} className='stat-item'>
+                        {stats.map((stat, index) => (
+                            <div key={index} className='stat-item'>
                                 <span className='stat-icon'>{stat.icon}</span>
                                 <div>
                                     <div className='stat-value'>
@@ -134,9 +134,11 @@ function LandingPage() {
                     <div className='hero-actions'>
                         <button
                             className='btn-primary'
-                            onClick={document
-                                .getElementById('features')}
-                                // .scrollIntoView({ behavior: 'smooth' })}
+                            onClick={() =>
+                                document
+                                    .getElementById('features')
+                                    ?.scrollIntoView({ behavior: 'smooth' })
+                            }
                         >
                             Explore Features
                             <span className='btn-icon'>↓</span>
@@ -147,6 +149,7 @@ function LandingPage() {
                                 window.open(
                                     'https://github.com/Jarabi/frontend-features',
                                     '_blank',
+                                    'noopener,noreferrer',
                                 )
                             }
                         >
@@ -177,22 +180,21 @@ function LandingPage() {
                     </div>
 
                     {/* Search and filter bar */}
-                    <div className='features-control'>
+                    <div className='features-controls'>
                         <div className='search-wrapper'>
                             <span className='search-icon'>🔍</span>
                             <input
                                 type='text'
                                 className='search-input'
                                 value={searchQuery}
-                                onChange={(e) =>
-                                    setSearchQuery(e.target.validationMessage)
-                                }
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder='Search features...'
                             />
                             {searchQuery && (
                                 <button
                                     className='clear-search'
-                                    onClick={() => searchQuery('')}
+                                    aria-label='Clear search'
+                                    onClick={() => setSearchQuery('')}
                                 >
                                     ✕
                                 </button>
@@ -204,6 +206,8 @@ function LandingPage() {
                                 <button
                                     key={tag}
                                     className={`tag-btn ${selectedTag === tag ? 'active' : ''}`}
+                                    aria-pressed={selectedTag === tag}
+                                    onClick={() => setSelectedTag(tag)}
                                 >
                                     {tag}
                                 </button>
@@ -251,7 +255,7 @@ function LandingPage() {
                                         {feature.difficulty}
                                     </span>
                                     <a
-                                        href='feature.path'
+                                        href={feature.path}
                                         className='demo-link'
                                         target='_blank'
                                         rel='noopener noreferrer'
@@ -283,9 +287,9 @@ function LandingPage() {
             {/* Tech Stack Section */}
             <section className='tech-stack'>
                 <div className='container'>
-                    <h2 className='section-title'>Built with Moden Tech</h2>
+                    <h2 className='section-title'>Built with Modern Tech</h2>
                     <div className='tech-grid'>
-                        <div className='tech-item'>⚛️ React 18</div>
+                        <div className='tech-item'>⚛️ React 19</div>
                         <div className='tech-item'>⚡ Vite</div>
                         <div className='tech-item'>🎨 CSS3 Animations</div>
                         <div className='tech-item'>♿ Accessibility First</div>
@@ -304,10 +308,30 @@ function LandingPage() {
                         Built with ❤️ for production-grade frontend development
                     </p>
                     <div className='footer-links'>
-                        <a href='#'>Documentation</a>
-                        <a href='#'>GitHub</a>
-                        <a href='#'>Issues</a>
-                        <a href='#'>License</a>
+                        <a
+                            href='https://github.com/Jarabi/frontend-features#readme'
+                            target='_blank'
+                        >
+                            Documentation
+                        </a>
+                        <a
+                            href='https://github.com/Jarabi/frontend-features'
+                            target='_blank'
+                        >
+                            GitHub
+                        </a>
+                        <a
+                            href='https://github.com/Jarabi/frontend-features/issues'
+                            target='_blank'
+                        >
+                            Issues
+                        </a>
+                        <a
+                            href='https://github.com/Jarabi/frontend-features/blob/main/LICENSE'
+                            target='_blank'
+                        >
+                            License
+                        </a>
                     </div>
                 </div>
             </footer>
