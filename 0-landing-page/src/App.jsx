@@ -2,8 +2,7 @@ import LandingPage from './components/LandingPage'
 import './App.css'
 
 function App() {
-
-  return <LandingPage />
+    return <LandingPage />;
 }
 
-export default App
+export default App;
