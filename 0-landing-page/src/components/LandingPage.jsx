@@ -318,7 +318,7 @@ function LandingPage() {
                             Issues
                         </a>
                         <a
-                            href='https://github.com/Jarabi/frontend-features/blob/main/LICENSE'
+                            href='https://github.com/Jarabi/frontend-features/blob/main/LICENSE.md'
                             target='_blank'
                         >
                             License
