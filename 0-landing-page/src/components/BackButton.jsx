@@ -1,7 +1,9 @@
-const BackButton = () => {
-    <a href="/frontend-features/" className='back-button'>
-        ← Back to Features
-    </a>
-}
+import './BackButton.css';
 
-export default BackButton
+const BackButton = () => {
+    <a href={`${import.meta.env.BASE_URL}`} className='back-button'>
+        ← Back to Features
+    </a>;
+};
+
+export default BackButton;
