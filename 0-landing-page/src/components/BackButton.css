@@ -1,0 +1,19 @@
+.back-button {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #667eea;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: all 0.2s;
+}
+
+.back-button:hover {
+    transform: translateX(-4px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

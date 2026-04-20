@@ -1,13 +1,16 @@
 {
-    "name": "0-landing-page",
+    "name": "frontend-features",
     "private": true,
     "version": "0.0.0",
+    "homepage": "https://Jarabi.github.io/frontend-features",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
         "lint": "eslint .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d dist"
     },
     "dependencies": {
         "react": "^19.2.4",
