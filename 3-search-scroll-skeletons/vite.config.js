@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react()],
-    base: '/frontend-features/loading-skeletons/',
+    base: '/frontend-features/3-search-scroll-skeletons/',
 });

@@ -451,8 +451,8 @@ function App() {
             <ModalContainer />
 
             <header>
-                <h1>🔍 Search + Infinite Scroll + Toasts</h1>
-                <p>Production-grade features with toast notifications</p>
+                <h1>🎭 Modal Dialog System</h1>
+                <p>Production-grade features with modal dialogs</p>
             </header>
 
             {/* Toast demo controls */}

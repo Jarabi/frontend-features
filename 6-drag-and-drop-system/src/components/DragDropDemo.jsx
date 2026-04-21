@@ -100,7 +100,6 @@ const DragDropDemo = () => {
     const handleSaveOrder = async (newOrder) => {
         try {
             await saveOrder(newOrder);
-            success('Order saved successfully!', 2000);
         } catch (err) {
             showError(`Failed to save order: ${err.message ?? err}`);
             throw err;
@@ -121,9 +120,7 @@ const DragDropDemo = () => {
     if (loading) {
         return (
             <div className='dragdrop-loading'>
-                <div className='spinner'>
-                    <p>Loading tasks...</p>
-                </div>
+                <div className='spinner'></div>
             </div>
         );
     }
