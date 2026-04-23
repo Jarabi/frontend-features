@@ -2,6 +2,11 @@
 
 Building production-grade frontend features requires attention to performance, accessibility, error resilience, and a smooth user experience. Below is a structured roadmap that walks you through each feature, explaining the core concepts, step‑by‑step implementation strategies, and the production‑grade considerations you must master.
 
+[Live Demo](https://jarabi.github.io/frontend-features/)
+
+**Frontend Features Demo**
+![Frontend Features Demo](screenshots/showcase.gif)
+
 ## Table of Content
 
 * [1. Infinite Scrolling](#1-infinite-scrolling)
@@ -71,14 +76,7 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/1-infinite-scroll/)
 
-**Infinite Scroll Initial**
-![Infinite Scrolling - Initial](screenshots/infinite-scroll-initial.png)
-
-**Infinite Scroll Load More**
-![Infinite Scrolling - Load more](screenshots/infinite-scroll-load-more.png)
-
-**Infinite Scroll End**
-![Infinite Scrolling - Load more](screenshots/infinite-scroll-end.png)
+![Infinite Scrolling Demo](screenshots/infinite_scroll.gif)
 
 ## 2. Debounced Search
 
@@ -127,14 +125,7 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/2-debounced-search/)
 
-**Before Search**
-![Debounced Search Demo - before](screenshots/debounced-before.png)
-
-**Debounced Search**
-![Debounced Search Demo](screenshots/debounced-search.png)
-
-**End of Search**
-![Debounced Search Demo - end](screenshots/debounced-end.png)
+![Debounced Search Demo](screenshots/debounced.gif)
 
 ## 3. Search + Infinite Scroll + Loading Skeletons
 
@@ -181,17 +172,7 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/3-search-scroll-skeletons/)
 
-**Skeletons - Blog View**
-![Loading Skeletons - Blog View](screenshots/skeletons-blog-view.png)
-
-**Skeletons - Dashboard View**
-![Loading Skeletons - Dashboard View](screenshots/skeletons-dashboard-view.png)
-
-**Skeletons - List View**
-![Loading Skeletons - List View](screenshots/skeletons-list-view.png)
-
-**Skeletons - Social Feed View**
-![Loading Skeletons - Social Feed View](screenshots/skeletons-social-feed-view.png)
+![Loading Skeletons Demo](screenshots/skeletons.gif)
 
 ## 4. Toast Notifications
 
@@ -242,14 +223,7 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/4-toast-notifications/)
 
-**Toasts - All Types Stacked**
-![Toast Notifications - Stacked](screenshots/toasts-all-types-stacked.png)
-
-**Toasts - Example Notification**
-![Toast Notifications - Example Notifocation](screenshots/toasts-success-notification.png)
-
-**Toasts - Change Position**
-![Toast Notifications - Change Position](screenshots/toasts-change-position.png)
+![Toast Notifications Demo](screenshots/toasts.gif)
 
 ## 5. Modal Dialogs
 
@@ -330,29 +304,7 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/5-modal-dialog-system/)
 
-**Modal Dialogs - Simple Modal**
-![Modal Dialogs - Simple modal](screenshots/modals-simple.png)
-
-**Modal Dialogs - Confirmation Modal**
-![Modal Dialogs - Confirmation modal](screenshots/modals-confirm.png)
-
-**Modal Dialogs - Form Modal**
-![Modal Dialogs - Form modal](screenshots/modals-form.png)
-
-**Modal Dialogs - Form Modal Filled**
-![Modal Dialogs - Form modal Filled](screenshots/modals-form-filled.png)
-
-**Modal Dialogs - Form Modal Toast Confirmation**
-![Modal Dialogs - Form modal Toast Confirmation](screenshots/modals-form-toast-confirmation.png)
-
-**Modal Dialogs - Large Content**
-![Modal Dialogs - Large Content](screenshots/modals-large-content.png)
-
-**Modal Dialogs - Stacked First Layer**
-![Modal Dialogs - Stacked First Layer](screenshots/modals-stacked-first-layer.png)
-
-**Modal Dialogs - Stacked Second Layer**
-![Modal Dialogs - Stacked Second Layer](screenshots/modals-stacked-second-layer.png)
+![Modal Dialogs Demo](screenshots/modals.gif)
 
 ## 6. Drag and Drop
 
@@ -438,20 +390,7 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/6-drag-and-drop-system/)
 
-**Drag and Drop Initial**
-![Drag and Drop - Initial](screenshots/drag-drop-initial.png)
-
-**Drag and Drop Sorting**
-![Drag and Drop - Sorting](screenshots/drag-drop-sorting.png)
-
-**Drag and Drop Pending Save**
-![Drag and Drop - Pending Save](screenshots/drag-drop-saving.png)
-
-**Drag and Drop Order Saved**
-![Drag and Drop - Order Saved](screenshots/drag-drop-save-confirm.png)
-
-**Drag and Drop Reset**
-![Drag and Drop - Reset](screenshots/drag-drop-reset.png)
+![Drag and Drop Demo](screenshots/dragdrop.gif)
 
 #### General Production‑Grade Principles for All Features
 
