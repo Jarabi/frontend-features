@@ -7,7 +7,7 @@ Building production-grade frontend features requires attention to performance, a
 **Frontend Features Demo**
 ![Frontend Features Demo](screenshots/showcase.gif)
 <div align="center">
-    <video src="showcase.mp4" 
+    <video src="https://github.com/Jarabi/frontend-features/blob/main/screenshots/infinite.mp4" 
         width="100%" 
         autoplay 
         loop 
