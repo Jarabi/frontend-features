@@ -4,9 +4,9 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/)
 
-**Frontend Features Demo**
+**Frontend Features Showcase**
 <div align="center">
-    <video src="https://github.com/user-attachments/assets/e82081cd-b13d-4970-8d44-bc17c0c90646" 
+    <video src="https://github.com/user-attachments/assets/95c52db2-8f3d-45f9-9b15-8ff9f55ec72a" 
         width="100%" 
         autoplay 
         loop 
@@ -84,7 +84,15 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/1-infinite-scroll/)
 
-![Infinite Scrolling Demo](screenshots/infinite_scroll.gif)
+<div align="center">
+    <video src="https://github.com/user-attachments/assets/e82081cd-b13d-4970-8d44-bc17c0c90646" 
+        width="100%" 
+        autoplay 
+        loop 
+        muted 
+        playsinline>
+    </video>
+</div>
 
 ## 2. Debounced Search
 
@@ -133,7 +141,15 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/2-debounced-search/)
 
-![Debounced Search Demo](screenshots/debounced.gif)
+<div align="center">
+    <video src="https://github.com/user-attachments/assets/5f58a5d0-3898-4016-af2c-5cf4002816ca" 
+        width="100%" 
+        autoplay 
+        loop 
+        muted 
+        playsinline>
+    </video>
+</div>
 
 ## 3. Search + Infinite Scroll + Loading Skeletons
 
@@ -180,7 +196,15 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/3-search-scroll-skeletons/)
 
-![Loading Skeletons Demo](screenshots/skeletons.gif)
+<div align="center">
+    <video src="https://github.com/user-attachments/assets/60c0cb81-6f43-466a-88fe-b01310184f08" 
+        width="100%" 
+        autoplay 
+        loop 
+        muted 
+        playsinline>
+    </video>
+</div>
 
 ## 4. Toast Notifications
 
@@ -231,7 +255,15 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/4-toast-notifications/)
 
-![Toast Notifications Demo](screenshots/toasts.gif)
+<div align="center">
+    <video src="https://github.com/user-attachments/assets/21978ece-0ca6-488d-a106-dadb66e4d8b3" 
+        width="100%" 
+        autoplay 
+        loop 
+        muted 
+        playsinline>
+    </video>
+</div>
 
 ## 5. Modal Dialogs
 
@@ -312,7 +344,15 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/5-modal-dialog-system/)
 
-![Modal Dialogs Demo](screenshots/modals.gif)
+<div align="center">
+    <video src="https://github.com/user-attachments/assets/49794a3f-1de8-4037-968a-1ae2b55b7d42" 
+        width="100%" 
+        autoplay 
+        loop 
+        muted 
+        playsinline>
+    </video>
+</div>
 
 ## 6. Drag and Drop
 
@@ -398,7 +438,15 @@ Building production-grade frontend features requires attention to performance, a
 
 [Live Demo](https://jarabi.github.io/frontend-features/6-drag-and-drop-system/)
 
-![Drag and Drop Demo](screenshots/dragdrop.gif)
+<div align="center">
+    <video src="https://github.com/user-attachments/assets/a16b7875-bc7c-453a-9063-bea6506f46b7" 
+        width="100%" 
+        autoplay 
+        loop 
+        muted 
+        playsinline>
+    </video>
+</div>
 
 #### General Production‑Grade Principles for All Features
 
