@@ -2,13 +2,6 @@
 
 Building production-grade frontend features requires attention to performance, accessibility, error resilience, and a smooth user experience. Below is a structured roadmap that walks you through each feature, explaining the core concepts, step‑by‑step implementation strategies, and the production‑grade considerations you must master
 
-<div align="center">
-  <img src="https://shields.io" alt="React" />
-  <img src="https://shields.io" alt="Vite" />
-  <img src="https://shields.io" alt="CSS3" />
-  <img src="https://shields.io" alt="JavaScript" />
-</div>
-
 ## ✨ Key Features
 
 - ♾️ **Infinite Scroll** – Smooth data fetching using Intersection Observer.
