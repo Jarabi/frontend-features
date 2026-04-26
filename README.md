@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/e82081cd-b13d-4970-8d44-bc17c0c90646
+
 # Frontend Features
 
 Building production-grade frontend features requires attention to performance, accessibility, error resilience, and a smooth user experience. Below is a structured roadmap that walks you through each feature, explaining the core concepts, step‑by‑step implementation strategies, and the production‑grade considerations you must master.
