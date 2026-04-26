@@ -5,7 +5,6 @@ Building production-grade frontend features requires attention to performance, a
 [Live Demo](https://jarabi.github.io/frontend-features/)
 
 **Frontend Features Demo**
-![Frontend Features Demo](screenshots/showcase.gif)
 <div align="center">
     <video src="https://github.com/Jarabi/frontend-features/blob/main/screenshots/infinite.mp4" 
         width="100%" 
