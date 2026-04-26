@@ -6,6 +6,15 @@ Building production-grade frontend features requires attention to performance, a
 
 **Frontend Features Demo**
 ![Frontend Features Demo](screenshots/showcase.gif)
+<div align="center">
+    <video src="showcase.mp4" 
+        width="100%" 
+        autoplay 
+        loop 
+        muted 
+        playsinline>
+    </video>
+</div>
 
 ## Table of Content
 
