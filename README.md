@@ -2,6 +2,22 @@
 
 Building production-grade frontend features requires attention to performance, accessibility, error resilience, and a smooth user experience. Below is a structured roadmap that walks you through each feature, explaining the core concepts, step‑by‑step implementation strategies, and the production‑grade considerations you must master.
 
+<div align="center">
+![React](https://shields.io)
+![Vite](https://shields.io)
+![CSS3](https://shields.io)
+![JavaScript](https://shields.io)
+</div>
+
+## ✨ Key Features
+
+- ♾️ **Infinite Scroll** – Smooth data fetching using Intersection Observer.
+- 🔍 **Debounced Search** – Optimized API calls to prevent server bottlenecking.
+- 🦴 **Loading Skeletons** – Enhanced UX with perceived performance improvements.
+- 🍞 **Toast Notifications** – Real-time feedback for user actions.
+- 🪟 **Modal Dialogs** – Accessible, portal-based UI components.
+- 🖐️ **Drag and Drop** – Intuitive item reordering and interaction.
+
 [Live Demo](https://jarabi.github.io/frontend-features/)
 
 **Frontend Features Showcase**
