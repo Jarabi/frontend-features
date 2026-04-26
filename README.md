@@ -1,11 +1,13 @@
 # Frontend Features
 
-Building production-grade frontend features requires attention to performance, accessibility, error resilience, and a smooth user experience. Below is a structured roadmap that walks you through each feature, explaining the core concepts, step‑by‑step implementation strategies, and the production‑grade considerations you must master.
+Building production-grade frontend features requires attention to performance, accessibility, error resilience, and a smooth user experience. Below is a structured roadmap that walks you through each feature, explaining the core concepts, step‑by‑step implementation strategies, and the production‑grade considerations you must master
 
-![React](https://shields.io)
-![Vite](https://shields.io)
-![CSS3](https://shields.io)
-![JavaScript](https://shields.io)
+<div align="center">
+  <img src="https://shields.io" alt="React" />
+  <img src="https://shields.io" alt="Vite" />
+  <img src="https://shields.io" alt="CSS3" />
+  <img src="https://shields.io" alt="JavaScript" />
+</div>
 
 ## ✨ Key Features
 
